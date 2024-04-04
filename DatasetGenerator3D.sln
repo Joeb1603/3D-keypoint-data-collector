@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26124.0
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{4E61FB91-B8F0-47F0-8F83-A63C4341E7E2}") = "DatasetGenerator3D.Client", "Client\DatasetGenerator3D.Client.csproj", "{8AFD1EFB-5B29-4F74-AA28-D8C080BD6977}"
+EndProject
+Project("{4E61FB91-B8F0-47F0-8F83-A63C4341E7E2}") = "DatasetGenerator3D.Server", "Server\DatasetGenerator3D.Server.csproj", "{C33CB012-7BF5-4030-A55B-61C482AB29A9}"
+EndProject
+Global
+  GlobalSection(SolutionConfigurationPlatforms) = preSolution
+    Debug|Any CPU = Debug|Any CPU
+    Release|Any CPU = Release|Any CPU
+  EndGlobalSection
+  GlobalSection(SolutionProperties) = preSolution
+    HideSolutionNode = FALSE
+  EndGlobalSection
+  GlobalSection(ProjectConfigurationPlatforms) = postSolution
+    {8AFD1EFB-5B29-4F74-AA28-D8C080BD6977}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {8AFD1EFB-5B29-4F74-AA28-D8C080BD6977}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {8AFD1EFB-5B29-4F74-AA28-D8C080BD6977}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {8AFD1EFB-5B29-4F74-AA28-D8C080BD6977}.Release|Any CPU.Build.0 = Release|Any CPU
+    {C33CB012-7BF5-4030-A55B-61C482AB29A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {C33CB012-7BF5-4030-A55B-61C482AB29A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {C33CB012-7BF5-4030-A55B-61C482AB29A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {C33CB012-7BF5-4030-A55B-61C482AB29A9}.Release|Any CPU.Build.0 = Release|Any CPU
+  EndGlobalSection
+EndGlobal
