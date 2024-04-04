@@ -1,0 +1,4 @@
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\bin\Release\netstandard2.0\publish\DatasetGenerator3D.Server.net.dll
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\bin\Release\netstandard2.0\publish\DatasetGenerator3D.Server.deps.json
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\bin\Release\netstandard2.0\publish\DatasetGenerator3D.Server.net.pdb
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\bin\Release\netstandard2.0\publish\CitizenFX.Core.Server.dll

@@ -1,0 +1,2 @@
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Client\bin\Release\net452\publish\DatasetGenerator3D.Client.net.dll
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Client\bin\Release\net452\publish\CitizenFX.Core.Client.dll

@@ -1,0 +1,9 @@
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Client\bin\Release\net452\DatasetGenerator3D.Client.net.dll
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Client\bin\Release\net452\CitizenFX.Core.Client.dll
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Client\obj\Release\net452\DatasetGenerator3D.Client.csproj.AssemblyReference.cache
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Client\obj\Release\net452\DatasetGenerator3D.Client.GeneratedMSBuildEditorConfig.editorconfig
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Client\obj\Release\net452\DatasetGenerator3D.Client.AssemblyInfoInputs.cache
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Client\obj\Release\net452\DatasetGenerator3D.Client.AssemblyInfo.cs
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Client\obj\Release\net452\DatasetGenerator3D.Client.csproj.CoreCompileInputs.cache
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Client\obj\Release\net452\DatasetGenerator3D.Client.csproj.CopyComplete
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Client\obj\Release\net452\DatasetGenerator3D.Client.net.dll

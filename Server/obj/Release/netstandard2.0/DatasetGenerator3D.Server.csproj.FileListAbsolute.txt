@@ -1,0 +1,10 @@
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\bin\Release\netstandard2.0\DatasetGenerator3D.Server.deps.json
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\bin\Release\netstandard2.0\DatasetGenerator3D.Server.net.dll
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\bin\Release\netstandard2.0\DatasetGenerator3D.Server.net.pdb
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\obj\Release\netstandard2.0\DatasetGenerator3D.Server.csproj.AssemblyReference.cache
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\obj\Release\netstandard2.0\DatasetGenerator3D.Server.GeneratedMSBuildEditorConfig.editorconfig
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\obj\Release\netstandard2.0\DatasetGenerator3D.Server.AssemblyInfoInputs.cache
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\obj\Release\netstandard2.0\DatasetGenerator3D.Server.AssemblyInfo.cs
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\obj\Release\netstandard2.0\DatasetGenerator3D.Server.csproj.CoreCompileInputs.cache
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\obj\Release\netstandard2.0\DatasetGenerator3D.Server.net.dll
+F:\Programming\Dissertation-mk2\Fivem\fivem-dataset-generator\[managers]\DatasetGenerator3D\Server\obj\Release\netstandard2.0\DatasetGenerator3D.Server.net.pdb

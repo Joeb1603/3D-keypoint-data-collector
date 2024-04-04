@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "1iIpPjy+61AxDop3sqSmUj22bKXsix3XGxDG1vvSE9shaPZu1OARoMWDPDmEVflo6Vepq9vijG8jO/QKe6k8Zw==",
+  "success": true,
+  "projectFilePath": "F:\\Programming\\Dissertation-mk2\\Fivem\\fivem-dataset-generator\\[managers]\\DatasetGenerator3D\\Server\\DatasetGenerator3D.Server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Joe\\.nuget\\packages\\citizenfx.core.server\\1.0.7359\\citizenfx.core.server.1.0.7359.nupkg.sha512",
+    "C:\\Users\\Joe\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\Joe\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
