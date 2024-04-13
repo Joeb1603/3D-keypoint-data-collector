@@ -29,16 +29,18 @@ namespace DatasetGenerator.Client
         private bool debugMode = false;
         private bool showBoxMode = false;
         private bool collectMode = false;
+        private bool dashcamMode = false;
         private int currentID = 0;
         public static int getInfoKey = 170; //f3
         public static int debugKey = 166; //f5
         public static int showBoxKey = 167; //f6
         public static int collectKey = 288; //f1
         public static int carOnlyCollectKey = 168; //f8
-        internal static float entityRange = 10000f;//15000f;
+        public static int dashcamCollectKey = 111; //Num 8
+        internal static float entityRange = 15000f;//10000f;//15000f;
         public float targetSpeed = 30f;
         private int picsFromLocation = 50;
-        private int ticksBetweenPics = 60;
+        private int ticksBetweenPics = 90;
 
         
         string saveDir = @"D:\Dissertation\dataset\";
@@ -58,6 +60,7 @@ namespace DatasetGenerator.Client
         private Location location1;
         private Location location2;
         private bool vehiclesOnScreen=false;
+        Vehicle playerVehicle = null;
         //private List<Location> locations;
         private Location[] locations;
         private int currentLocationIndex = 0;
@@ -312,7 +315,7 @@ namespace DatasetGenerator.Client
 
 
                     Vector3 currentVel = GetEntityVelocity(currentVeh);
-                    if(currentVel==new Vector3(0,0,0) || currentVel.Length()<targetSpeed/4){ //Target speed /6   targetSpeed/4 7.5f
+                    if((currentVel==new Vector3(0,0,0) || currentVel.Length()<targetSpeed/4) && !dashcamMode){ //Target speed /6   targetSpeed/4 7.5f currentVeh!=playerVehicle.Handle
                         DeleteEntity(ref currentVeh);
 
                     }else{
@@ -346,6 +349,7 @@ namespace DatasetGenerator.Client
         public void StopDataCollection(int playerEntity){
             collectMode=false; 
             canStart=false;
+            dashcamMode=false;
             //currentLocationIndex=0;
 
             FreezeEntityPosition(playerEntity, false);
@@ -365,7 +369,7 @@ namespace DatasetGenerator.Client
 
             int playerEntity = Game.PlayerPed.Handle; // set this as a global variable is probably a good idea
             
-            if (collectMode){
+            if (collectMode || dashcamMode){
                 tickCounter++;
             }else{
                 tickCounter=0;
@@ -423,10 +427,135 @@ namespace DatasetGenerator.Client
                 }
                 #endregion
 
+            #region Change dashcam mode if key is pressed numpad 8
+
+            if (Game.IsControlJustPressed(0, (Control)dashcamCollectKey)){
+                    Debug.WriteLine($"helo");
+                    if(!dashcamMode){ // If it is being changed to collect mode
+
+                        
+                        Ped playerPed = Game.PlayerPed;
+                        Vector3 playerPos = playerPed.Position;
+                        float closestDistance = -1f;
+                        Vehicle closestVehicle = null;
+
+                        if (!playerPed.IsInVehicle()){
+                            foreach (Vehicle vehicle in World.GetAllVehicles()){
+                                float distance = Vector3.Distance(playerPos, vehicle.Position);
+
+                                if ((closestDistance == -1f || distance < closestDistance) && vehicle.Driver.Exists())
+                                {
+                                    closestDistance = distance;
+                                    closestVehicle = vehicle;
+                                }
+                            }   
+
+                            if (closestVehicle != null){
+                                if (closestVehicle.Driver.Exists()){
+                                    Debug.WriteLine($" Driver: {closestVehicle.Driver}");
+                                    closestVehicle.Driver.Delete();
+                                }
+                                Debug.WriteLine($"Closest vehicle: {closestVehicle.Handle}, Distance: {closestDistance} IDK");
+                                
+                                new Ped(Game.PlayerPed.Handle).SetIntoVehicle(closestVehicle, VehicleSeat.Driver);
+                                playerVehicle = closestVehicle;
+                                SetFollowPedCamViewMode(4);
+
+                                ClearPedTasks(Game.PlayerPed.Handle);
+
+                                var veh = Game.PlayerPed.CurrentVehicle;
+                                var model = (uint)veh.Model.Hash;
+
+                                SetDriverAbility(Game.PlayerPed.Handle, 1f);
+                                SetDriverAggressiveness(Game.PlayerPed.Handle, 0f);
+
+                                TaskVehicleDriveWander(Game.PlayerPed.Handle, veh.Handle, GetVehicleModelMaxSpeed(model), 443);
+                                
+                                playerVehicle.IsVisible = false;
+                                SetEntityVisible(Game.PlayerPed.Handle, false, false);
+
+                                tickCounter=0;
+                                canStart = false;
+                                dashcamMode = true;
+                                
+                            }
+                        }
+                    
+                    }else{
+                        dashcamMode = false;
+                        SetCamViewModeForContext(0, 0);
+                        SetCamViewModeForContext(1, 0);
+                        SetCamViewModeForContext(2, 0);
+                        SetCamViewModeForContext(3, 0);
+                        SetCamViewModeForContext(4, 0);
+                        SetCamViewModeForContext(5, 0);
+                        SetCamViewModeForContext(6, 0);
+                        SetCamViewModeForContext(7, 0);
+                        playerVehicle.IsVisible = true;
+                        SetEntityVisible(Game.PlayerPed.Handle, true, false);
+                        StopDataCollection(playerEntity);
+                    }
+                }
+                #endregion
+
+
+            
+            if (dashcamMode && tickCounter>=60){
+                SetCamViewModeForContext(0, 4);
+                SetCamViewModeForContext(1, 4);
+                SetCamViewModeForContext(2, 4);
+                SetCamViewModeForContext(3, 4);
+                SetCamViewModeForContext(4, 4);
+                SetCamViewModeForContext(5, 4);
+                SetCamViewModeForContext(6, 4);
+                SetCamViewModeForContext(7, 4);
+                if(!canStart){ // if not ready to start
+                    if (tickCounter<1500){ //1500 
+                        tickCounter+=1;
+                        SetFollowPedCamViewMode(4);
+                    }else{ // next tick it will be ready 
+                        SetFollowPedCamViewMode(4);
+                        canStart= true;
+                    }
+                }else{
+                    Vector3 velocity = Game.PlayerPed.Velocity;
+
+                    // Calculate the speed (magnitude of the velocity vector)
+                    float speed = velocity.Length();
+
+                    if (speed>0){
+                        SetFollowPedCamViewMode(4);
+                        ClearPedTasks(Game.PlayerPed.Handle);
+                        FreezeVehicles(true);
+                        if(vehiclesOnScreen){
+                            //Updates the metadata and updates coordinate variables
+                            UpdateMetadata(true);
+                            
+                            //Triggers the event to save the screenshot
+                            TriggerServerEvent("saveImg", saveDir, currentID); //See ../Server/ServerSaveScreenshot.lua
+                        }else{
+                            
+                            FreezeVehicles(false);
+                        }
+                        var veh = Game.PlayerPed.CurrentVehicle;
+                        var model = (uint)veh.Model.Hash;
+
+                        SetDriverAbility(Game.PlayerPed.Handle, 1f);
+                        SetDriverAggressiveness(Game.PlayerPed.Handle, 0f);
+
+                        TaskVehicleDriveWander(Game.PlayerPed.Handle, veh.Handle, GetVehicleModelMaxSpeed(model), 443);
+                    }
+                    
+                    tickCounter=0;
+                }
+                
+            }
+
+
             if (collectMode && tickCounter>=ticksBetweenPics){ // ready to take an image 
                 
                 if(!canStart){ // if not ready to start
-                    if (tickCounter<3000){ //1500 
+                    if (tickCounter<1500){ //1500 
                         tickCounter+=1;
                     }else{ // next tick it will be ready 
                         canStart= true;
@@ -435,36 +564,41 @@ namespace DatasetGenerator.Client
 
                     if(!locations[currentLocationIndex].getShouldContinue()){ // if enough picsd have been taken from this location
                         
-                    if(currentLocationIndex!=(locations.Length)-1){  // if there is another location to go 
-                        collectMode= false;
-                        canStart=false;
-                        currentLocationIndex+=1;
+                        if(currentLocationIndex!=(locations.Length)-1){  // if there is another location to go 
+                            collectMode= false;
+                            canStart=false;
+                            currentLocationIndex+=1;
 
-                        Location currentLocation = locations[currentLocationIndex]; // repeated code block :(
-                        targetSpeed = currentLocation.GetSpeed();
-                        currentLocation.SetLocation(playerEntity);
-                        collectMode=true;
+                            Location currentLocation = locations[currentLocationIndex]; // repeated code block :(
+                            targetSpeed = currentLocation.GetSpeed();
+                            currentLocation.SetLocation(playerEntity);
+                            collectMode=true;
 
+                        }else{
+                            StopDataCollection(playerEntity);
+                        }    
                     }else{
-                        StopDataCollection(playerEntity);
-                    }    
-                }else{
-                    //Resets timer for taking screenshots
-                    tickCounter=0;
+                        //Resets timer for taking screenshots
+                        tickCounter=0;
 
-                    Location currentLocation = locations[currentLocationIndex];
-                   
-                    //Set Condition (time and weather)
-                    currentLocation.SetCondition();
-                    //Freezes all nearby vehicles
-                    FreezeVehicles(true);
+                        Location currentLocation = locations[currentLocationIndex];
                     
-                    //Updates the metadata and updates coordinate variables
-                    UpdateMetadata(true);
-                    
-                    //Triggers the event to save the screenshot
-                    TriggerServerEvent("saveImg", saveDir, currentID); //See ../Server/ServerSaveScreenshot.lua
-                }
+                        //Set Condition (time and weather)
+                        currentLocation.SetCondition();
+                        //Freezes all nearby vehicles
+                        FreezeVehicles(true);
+                        
+
+                        if(vehiclesOnScreen){
+                            //Updates the metadata and updates coordinate variables
+                            UpdateMetadata(true);
+                            
+                            //Triggers the event to save the screenshot
+                            TriggerServerEvent("saveImg", saveDir, currentID); //See ../Server/ServerSaveScreenshot.lua
+                        }else{
+                            FreezeVehicles(false);
+                        }
+                    }
 
 
                     
@@ -481,7 +615,8 @@ namespace DatasetGenerator.Client
 
             playerPos = Game.PlayerPed.Position;
             //vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), e.Handle, 17)).ToList(); 
-            vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), e.Handle, 17)).ToList(); 
+            //vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), e.Handle, 17)).ToList(); 
+            vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen ).ToList(); 
             
 
             vehiclesOnScreen = false;
@@ -627,7 +762,7 @@ namespace DatasetGenerator.Client
                 float relativeHeight = height / yScreen;
 
                 
-                if (minX >= 0 && minY >= 0 && maxX < xScreen && maxY < yScreen){ //If the full bounding box is on the screen
+                if ((minX >= 0 && minY >= 0 && maxX < xScreen && maxY < yScreen) && v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)){ //If the full bounding box is on the screen
                     vehiclesOnScreen = true;
                     if(showBoxMode){
                         DrawRect(relativeX, relativeY, relativeWidth, relativeHeight, 100, 255, 255, 150);
@@ -639,8 +774,17 @@ namespace DatasetGenerator.Client
                 }else{
                     if(vehiclesFrozen && save){
                          int currentVeh = v.Handle;
-                         Debug.WriteLine($"Vehicle deleted: {currentVeh}");
-                        DeleteEntity(ref currentVeh);
+                         if (playerVehicle!=null){
+                              if (currentVeh!=playerVehicle.Handle){
+                                Debug.WriteLine($"Vehicle deleted: {currentVeh} {playerVehicle}");
+                                DeleteEntity(ref currentVeh);
+                            }  
+                         }else{
+                             Debug.WriteLine($"Vehicle deleted: {currentVeh}");
+                            DeleteEntity(ref currentVeh);
+                         }
+                        
+                         
                         
                     }
                     
