@@ -35,13 +35,13 @@ namespace DatasetGenerator.Client
         public static int showBoxKey = 167; //f6
         public static int collectKey = 288; //f1
         public static int carOnlyCollectKey = 168; //f8
-        internal static float entityRange = 15000f;//15000f;
+        internal static float entityRange = 10000f;//15000f;
         public float targetSpeed = 30f;
         private int picsFromLocation = 50;
         private int ticksBetweenPics = 60;
 
         
-        string saveDir = @"F:\Programming\Dissertation-mk2\Fivem\dataset\";
+        string saveDir = @"D:\Dissertation\dataset\";
 
         private List<Vehicle> vehicles = new List<Vehicle>();
         private Vector3 playerPos;
@@ -269,71 +269,26 @@ namespace DatasetGenerator.Client
         public ClientMain()
         {
             
-            Debug.WriteLine("DatasetGenerator.Client activated");
-            
+            Debug.WriteLine($" DatasetGenerator.Client activated at [{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]");
 
+            
+            picsFromLocation = 10;
             locations = new Location[]{
                 //new Location(new Vector3(-106.6908f, -519.0898f, 39.84289f), 0f, new Vector3(0f, 0f, -8.321015f), -30.22839f, 10f, picsFromLocation, true),
                 new Location(new Vector3(-396.6956f, 258.3295f, 84.95533f), -0.08379275f, new Vector3(0f, 0f, -169.8985f), -9.746197f, 10f, picsFromLocation, true),
+                new Location(new Vector3(-684.6088f, -1201.297f, 11.48662f), 6.830189E-06f, new Vector3(0f, 0f, 99.10529f), -4.075363f, 10f, picsFromLocation, true),
+                new Location(new Vector3(-1099.225f, -1308.184f, 6.221095f), 1.366038E-05f, new Vector3(0f, 0f, 114.9308f), 0.3984259f, 10f, picsFromLocation, true),
+                new Location(new Vector3(-996.4599f, -856.6437f, 14.02444f), -0.08833483f, new Vector3(0f, 0f, 69.45237f), -6.899021f, 10f, picsFromLocation, true),
+                new Location(new Vector3(-1013.158f, -852.0976f, 17.15666f), 0f, new Vector3(0f, 0f, -29.30029f), -18.85762f, 10f, picsFromLocation, true),
+                new Location(new Vector3(-924.1362f, -543.504f, 25.23962f), -8.537736E-07f, new Vector3(0f, 0f, -14.02249f), -19.26244f, 10f, picsFromLocation, true),
+                new Location(new Vector3(-941.0885f, -554.3464f, 33.30359f), 6.830189E-06f, new Vector3(0f, 0f, 110.3936f), -39.78363f, 10f, picsFromLocation, true),
+                new Location(new Vector3(-1099.231f, -673.6322f, 25.81387f), 1.366038E-05f, new Vector3(0f, 0f, 135.4087f), -13.31058f, 10f, picsFromLocation, true),
+                new Location(new Vector3(-1098.779f, -729.7245f, 24.64202f), 0f, new Vector3(0f, 0f, 41.71575f), -26.91467f, 10f, picsFromLocation, true),
+                new Location(new Vector3(-801.694f, -78.85551f, 61.41818f), -3.415094E-06f, new Vector3(0f, 0f, -48.00604f), -51.43717f, 10f, picsFromLocation, true),
+                new Location(new Vector3(-781.9294f, 217.2976f, 77.67545f), 0f, new Vector3(0f, 0f, -100.372f), -24.58274f, 10f, picsFromLocation, true),
+                new Location(new Vector3(241.6309f, 305.2818f, 106.5246f), 0f, new Vector3(0f, 0f, -16.41452f), -9.46713f, 10f, picsFromLocation, true),
             };
-
-            /*locations = new Location[]{
-                // Highways
-                new Location(new Vector3(-1789.430f, -650.141f, 20f), 5.567f, new Vector3(0.000f, 0.000f, 5.567f),-17.59277f, 30f),
-                new Location(new Vector3(-2681.45f, 2616.035f, 19.39864f), -6.830189E-06f, new Vector3(0f, 0f, -47.18701f), -2.454675f, 30f),
-                new Location(new Vector3(-1162.208f, 5250.1f, 75.11191f), 6.830189E-06f, new Vector3(0f, 0f, 71.09592f), -31.23303f, 30f),
-                new Location(new Vector3(2609.852f, 5173.946f, 78.83096f), -1.366038E-05f, new Vector3(0f, 0f, -167.2793f), -28.05221f, 30f),
-                new Location(new Vector3(2481.143f, 2967.247f, 64.61263f), 0f, new Vector3(0f, 0f, 127.8405f), -12.3284f, 30f),
-                // Urban
-                new Location(new Vector3(1769.527f, 3540.025f, 36.594f), 339.961f, new Vector3(0.000f, 0.000f, -20.039f),-1.670777f, 10f),
-                new Location(new Vector3(-640.952f, -1531.846f, 22.94387f), 6.830189E-06f, new Vector3(0f, 0f, 103.7186f), -10.77995f, 10f), //slow
-                new Location(new Vector3(-294.5515f, -1821.041f, 49.27009f), -6.830189E-06f, new Vector3(0f, 0f, -104.069f), -20.70007f, 10f),
-                new Location(new Vector3(81.70882f, -1906.543f, 25.84157f), 3.415094E-06f, new Vector3(0f, 0f, 42.32573f), -6.533714f, 10f),
-                new Location(new Vector3(910.7935f, -2470.437f, 28.65929f), 0f, new Vector3(0f, 0f, 41.96225f), 1.877675f, 10f),
-                new Location(new Vector3(1389.423f, -1631.4f, 63.67603f), 6.830189E-06f, new Vector3(0f, 0f, 75.31506f), -13.27346f, 10f),
-                new Location(new Vector3(1125.738f, -513.2305f, 72.53145f), -6.830189E-06f, new Vector3(0f, 0f, -98.63248f), -6.08167f, 10f),
-                new Location(new Vector3(1065.598f, -534.1071f, 64.73195f), 6.830189E-06f, new Vector3(0f, 0f, 97.7282f), -3.598453f, 10f),
-                new Location(new Vector3(863.1425f, -511.2666f, 58.13159f), -1.366038E-05f, new Vector3(0f, 0f, -139.1936f), 2.177621f, 10f),
-                new Location(new Vector3(548.1376f, -189.2076f, 79.43042f), 6.830189E-06f, new Vector3(0f, 0f, 58.4398f), -21.22769f, 10f),
-                new Location(new Vector3(367.6646f, 116.7666f, 109.1424f), 1.366038E-05f, new Vector3(0f, 0f, 119.7441f), -19.6664f, 10f),
-                new Location(new Vector3(199.72f, 211.8542f, 109.1424f), 6.830189E-06f, new Vector3(0f, 0f, 103.8686f), -4.056938f, 10f),
-                new Location(new Vector3(-917.3553f, 222.5634f, 70.46163f), -4.268868E-07f, new Vector3(0f, 0f, -5.603947f), -1.524998f, 10f),
-                new Location(new Vector3(-1812.643f, 741.5195f, 147.9204f), 6.830189E-06f, new Vector3(0f, 0f, 93.5533f), -13.79819f, 10f),
-                new Location(new Vector3(-1561.443f, 2141.757f, 63.60139f), -6.830189E-06f, new Vector3(0f, 0f, -95.46081f), -4.624403f, 10f)
-            };*/
-
             
-            /*locations = new Location[]{
-                // Highways
-                new Location(new Vector3(-1132.036f, -673.7594f, 26.80851f), 0.009452981f, new Vector3(0f, 0f, -34.14581f), -13.7405f, 10f),
-                new Location(new Vector3(1093.696f, -1254.987f, 50.73227f), 0.007649811f, new Vector3(0f, 0f, 148.0432f), -17.7662f, 10f),
-                new Location(new Vector3(-159.4719f, -2520.974f, 56.61626f), 0.004381566f, new Vector3(0f, 0f, 31.18804f), -9.249206f, 10f),
-                new Location(new Vector3(307.2684f, -509.4225f, 47.03375f), 0.008264529f, new Vector3(0f, 0f, -93.86313f), -17.25018f, 10f),
-                new Location(new Vector3(702.5297f, -136.188f, 75.36983f), -0.07315132f, new Vector3(0f, 0f, 148.0588f), -30.53867f, 10f),
-                // Urban
-                new Location(new Vector3(-1105.715f, -763.2001f, 25.00811f), 0.004992868f, new Vector3(0f, 0f, -88.40858f), -11.29021f, 10f),
-                new Location(new Vector3(-1099.846f, 407.1255f, 79.24268f), 0.01043653f, new Vector3(0f, 0f, -122.7202f), -21.6433f, 10f),
-                new Location(new Vector3(236.2784f, -2054.758f, 20.68861f), 0.002438377f, new Vector3(0f, 0f, 104.2376f), -4.885482f, 10f),
-                new Location(new Vector3(-112.5311f, -1388.279f, 36.04754f), 0.008530905f, new Vector3(0f, 0f, -30.2953f), -11.66373f, 10f),
-                new Location(new Vector3(282.8401f, -106.8599f, 70.93195f), 0.0006343538f, new Vector3(0f, 0f, 10.1719f), -1.757029f, 10f),
-
-                new Location(new Vector3(1016.231f, -743.132f, 62.66138f), 0.005516551f, new Vector3(0f, 0f, 1.399124f), -5.154248f, 10f),
-                new Location(new Vector3(959.6918f, -305.0229f, 75.83308f), 0.01070632f, new Vector3(0f, 0f, -50.5843f), -16.98691f, 10f),
-                new Location(new Vector3(690.0115f, 336.9981f, 125.1473f), 0.0134623f, new Vector3(0f, 0f, 84.68327f), -22.42627f, 10f),
-                new Location(new Vector3(883.383f, 541.887f, 130.6174f), 0.009849132f, new Vector3(0f, 0f, -135.9373f), -14.96457f, 10f),
-                new Location(new Vector3(429.594f, -1842.907f, 29.78854f), 0.0005669057f, new Vector3(0f, 0f, -92.43524f), 0.2275315f, 10f),
-
-                new Location(new Vector3(2451.769f, 5155.234f, 60.86834f), 0.006755057f, new Vector3(0f, 0f, 82.72517f), -11.77473f, 10f),
-                new Location(new Vector3(-187.6118f, 6355.654f, 36.99963f), 0.005962755f, new Vector3(0f, 0f, -85.40298f), -11.4009f, 10f),
-                new Location(new Vector3(-910.2065f, 5425.655f, 52.93232f), 0.005716868f, new Vector3(0f, 0f, 109.9048f), -13.12034f, 10f),
-                new Location(new Vector3(1711.219f, 3539.019f, 45.11282f), 0.007663472f, new Vector3(0f, 0f, 158.6355f), -12.01968f, 10f),
-                //new Location(new Vector3(230.3022f, 213.7925f, 118.5917f), 0.01290906f, new Vector3(0f, 0f, 133.754f), -23.46151f, 10f),
-                new Location(new Vector3(226.0912f, 213.6335f, 119.6275f), 0f, new Vector3(0f, 0f, 135.0015f), -32.31638f, 10f),
-                
-
-            };*/
-
-           
             TriggerServerEvent("generateDirs", $"{saveDir}\\images", $"{saveDir}\\labels");
 
             EventHandlers["updateMetadata"] += new Action<bool> (UpdateMetadata);
@@ -345,6 +300,7 @@ namespace DatasetGenerator.Client
         private void FreezeVehicles(bool freezeMode){
 
             Vehicle[] allNearbyCars = World.GetAllVehicles();
+            
 
             if(freezeMode){
 
@@ -353,9 +309,12 @@ namespace DatasetGenerator.Client
 
                 foreach (Vehicle v in allNearbyCars){
                     int currentVeh = v.Handle;
+
+
                     Vector3 currentVel = GetEntityVelocity(currentVeh);
                     if(currentVel==new Vector3(0,0,0) || currentVel.Length()<targetSpeed/4){ //Target speed /6   targetSpeed/4 7.5f
                         DeleteEntity(ref currentVeh);
+
                     }else{
                         carVelocityDict.Add(currentVeh, currentVel);
                         FreezeEntityPosition(currentVeh, true);
@@ -421,7 +380,7 @@ namespace DatasetGenerator.Client
                     float pPitch = GetGameplayCamRelativePitch();
                     float carSpeedTarget = 10f;
                     //Debug.WriteLine($"PITCH:{GetGameplayCamRelativePitch()}");
-                    Debug.WriteLine($" new Location(new Vector3({pCoords.X}f, {pCoords.Y}f, {pCoords.Z}f), {pHeading}f, new Vector3({pRotation.X}f, {pRotation.Y}f, {pRotation.Z}f), {pPitch}f, {carSpeedTarget}f, {"picsFromLocation"}), true");
+                    Debug.WriteLine($" new Location(new Vector3({pCoords.X}f, {pCoords.Y}f, {pCoords.Z}f), {pHeading}f, new Vector3({pRotation.X}f, {pRotation.Y}f, {pRotation.Z}f), {pPitch}f, {carSpeedTarget}f, {"picsFromLocation"}, true),");
                     //new Location(new Vector3(1769.527f, 3540.025f, 36.594f), 339.961f, new Vector3(0.000f, 0.000f, -20.039f),-1.670777f, 30);
                     
                 }
@@ -464,34 +423,17 @@ namespace DatasetGenerator.Client
                 }
                 #endregion
 
-            
-            if (collectMode && tickCounter>=ticksBetweenPics){ 
+            if (collectMode && tickCounter>=ticksBetweenPics){ // ready to take an image 
                 
-
-                if(!canStart){
-                    if (tickCounter<1500){ 
+                if(!canStart){ // if not ready to start
+                    if (tickCounter<3000){ //1500 
                         tickCounter+=1;
-                    }else{
+                    }else{ // next tick it will be ready 
                         canStart= true;
                     }
-                }else if(vehiclesOnScreen){ // if all parameters for taking a screenshot and saving metadata are true
+                }else if(vehiclesOnScreen){ // if all parameters for taking a screenshot and saving metadata are true and there is a vehicle on the screen
 
-                    //Resets timer for taking screenshots
-                    tickCounter=0;
-
-                    Location currentLocation = locations[currentLocationIndex];
-                   
-                    //Set Condition (time and weather)
-                    currentLocation.SetCondition();
-                    //Freezes all nearby vehicles
-                    FreezeVehicles(true);
-                    //Triggers the event to save the screenshot
-                    TriggerServerEvent("saveImg", saveDir, currentID); //See ../Server/ServerSaveScreenshot.lua
-                    //Updates the metadata and updates coordinate variables
-                    UpdateMetadata(true);
-                }
-            
-                if(!locations[currentLocationIndex].getShouldContinue()){ // if enough picsd have been taken from this location
+                    if(!locations[currentLocationIndex].getShouldContinue()){ // if enough picsd have been taken from this location
                         
                     if(currentLocationIndex!=(locations.Length)-1){  // if there is another location to go 
                         collectMode= false;
@@ -506,7 +448,30 @@ namespace DatasetGenerator.Client
                     }else{
                         StopDataCollection(playerEntity);
                     }    
+                }else{
+                    //Resets timer for taking screenshots
+                    tickCounter=0;
+
+                    Location currentLocation = locations[currentLocationIndex];
+                   
+                    //Set Condition (time and weather)
+                    currentLocation.SetCondition();
+                    //Freezes all nearby vehicles
+                    FreezeVehicles(true);
+                    
+                    //Updates the metadata and updates coordinate variables
+                    UpdateMetadata(true);
+                    
+                    //Triggers the event to save the screenshot
+                    TriggerServerEvent("saveImg", saveDir, currentID); //See ../Server/ServerSaveScreenshot.lua
                 }
+
+
+                    
+                    
+                }
+            
+                
             }
 
         return Task.FromResult(0);
@@ -515,14 +480,22 @@ namespace DatasetGenerator.Client
         private void UpdateMetadata(bool save){
 
             playerPos = Game.PlayerPed.Position;
+            //vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), e.Handle, 17)).ToList(); 
             vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), e.Handle, 17)).ToList(); 
-
-            if(vehicles.Count>0){
-                vehiclesOnScreen = true;
-            }else{
-                vehiclesOnScreen = false;
-            }
             
+
+            vehiclesOnScreen = false;
+
+            //if(vehicles.Count>0){
+            //    vehiclesOnScreen = true;
+            //}else{
+           //     vehiclesOnScreen = false;
+            //}
+
+            List<Vehicle> every_vehicle = new List<Vehicle>();
+            every_vehicle = (World.GetAllVehicles()).ToList(); 
+            int vehicleCount = every_vehicle.Count;
+
             if(save){
                 metadataList = new List<string>(){};
             }
@@ -531,6 +504,10 @@ namespace DatasetGenerator.Client
             {
                 
                 if(debugMode){
+                    //List<Vehicle> every_vehicle = new List<Vehicle>();
+                    //every_vehicle = (World.GetAllVehicles()).ToList(); 
+                    //int vehicleCount = every_vehicle.Count;
+                    //Debug.WriteLine($"Total number of vehicles: {vehicleCount}  out of {vehicles.Count}");
                     DrawEntityBoundingBox(v, 250, 150, 0, 100);
                 }
 
@@ -566,6 +543,7 @@ namespace DatasetGenerator.Client
                 int yScreen=0;
 
                 var vehicleBoxes = GetEntityBoundingBox(v.Handle);
+                
 
                 //GetScreenCoordFromWorldCoord(v.Position.X, v.Position.Y, v.Position.Z, ref xVal,ref yVal);
                 GetActiveScreenResolution(ref xScreen, ref yScreen);
@@ -610,7 +588,7 @@ namespace DatasetGenerator.Client
                         
 
                         SetDrawOrigin(vehicleBox.X, vehicleBox.Y, vehicleBox.Z, 0);
-                        //DrawTextOnScreen($"{currentXCoord},{currentYCoord} {hit} {counter}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                        DrawTextOnScreen($"{currentXCoord},{currentYCoord} {hit} {counter}", 0f, 0f, 0.3f, Alignment.Center, 0);
                         ClearDrawOrigin();
                     }
                     
@@ -629,7 +607,7 @@ namespace DatasetGenerator.Client
                 
                 if(debugMode){
                     SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z+1.5f, 0);
-                    DrawTextOnScreen($"{v.DisplayName}\n{v.ClassLocalizedName}", 0f, 0f, 0.3f, Alignment.Center, 0); // 
+                    DrawTextOnScreen($"{v.DisplayName}\n{v.ClassLocalizedName} Total number of vehicles: {vehicleCount}  out of {vehicles.Count}", 0f, 0f, 0.3f, Alignment.Center, 0); // 
                     ClearDrawOrigin();
                 }
 
@@ -650,6 +628,7 @@ namespace DatasetGenerator.Client
 
                 
                 if (minX >= 0 && minY >= 0 && maxX < xScreen && maxY < yScreen){ //If the full bounding box is on the screen
+                    vehiclesOnScreen = true;
                     if(showBoxMode){
                         DrawRect(relativeX, relativeY, relativeWidth, relativeHeight, 100, 255, 255, 150);
                     }
@@ -657,7 +636,15 @@ namespace DatasetGenerator.Client
                     if(save){
                         metadataList.Add($"{v.ClassDisplayName.Split('_').Last()} {relativeX} {relativeY} {relativeWidth} {relativeHeight} {keypointsX[0]} {keypointsY[0]} {visible[0]} {keypointsX[1]} {keypointsY[1]} {visible[1]} {keypointsX[2]} {keypointsY[2]} {visible[2]} {keypointsX[3]} {keypointsY[3]} {visible[3]} {keypointsX[4]} {keypointsY[4]} {visible[4]} {keypointsX[5]} {keypointsY[5]} {visible[5]} {keypointsX[6]} {keypointsY[6]} {visible[6]} {keypointsX[7]} {keypointsY[7]} {visible[7]}\n"); //TODO: Fix this issue with the number
                     } //
-                }  
+                }else{
+                    if(vehiclesFrozen && save){
+                         int currentVeh = v.Handle;
+                         Debug.WriteLine($"Vehicle deleted: {currentVeh}");
+                        DeleteEntity(ref currentVeh);
+                        
+                    }
+                    
+                }
             }
             if(save){
                 //Debug.WriteLine("UPDATED METADATA");
@@ -665,11 +652,12 @@ namespace DatasetGenerator.Client
         }
         private void SaveMetadata(){
 
-            FreezeVehicles(false);
+            //FreezeVehicles(false);
             //Debug.Write("SAVING METADATA");
             var metadataString =String.Join("",metadataList);
             TriggerServerEvent("saveData", saveDir, currentID, metadataString);
             currentID++;
+            FreezeVehicles(false);
             
         }
         private void ChangeLocation(int locationIndex, int player){
