@@ -40,10 +40,12 @@ namespace DatasetGenerator.Client
         internal static float entityRange = 15000f;//10000f;//15000f;
         public float targetSpeed = 30f;
         private int picsFromLocation = 50;
+        private int ticksBetweenPicsBackup = 90;
         private int ticksBetweenPics = 90;
+        private int ticksBetweenPicsDashcam = 120;
 
         
-        string saveDir = @"D:\Dissertation\dataset\";
+        string saveDir = @"F:\Programming\Dissertation-mk2\dataset\";
 
         private List<Vehicle> vehicles = new List<Vehicle>();
         private Vector3 playerPos;
@@ -470,10 +472,10 @@ namespace DatasetGenerator.Client
                                 SetDriverAggressiveness(Game.PlayerPed.Handle, 0f);
 
                                 TaskVehicleDriveWander(Game.PlayerPed.Handle, veh.Handle, GetVehicleModelMaxSpeed(model), 443);
-                                
+                                ticksBetweenPics = ticksBetweenPicsDashcam;
                                 playerVehicle.IsVisible = false;
                                 SetEntityVisible(Game.PlayerPed.Handle, false, false);
-
+                                targetSpeed = 1f;
                                 tickCounter=0;
                                 canStart = false;
                                 dashcamMode = true;
@@ -483,6 +485,7 @@ namespace DatasetGenerator.Client
                     
                     }else{
                         dashcamMode = false;
+                        ticksBetweenPics = ticksBetweenPicsBackup;
                         SetCamViewModeForContext(0, 0);
                         SetCamViewModeForContext(1, 0);
                         SetCamViewModeForContext(2, 0);
@@ -491,6 +494,7 @@ namespace DatasetGenerator.Client
                         SetCamViewModeForContext(5, 0);
                         SetCamViewModeForContext(6, 0);
                         SetCamViewModeForContext(7, 0);
+                        SetFollowPedCamViewMode(0);
                         playerVehicle.IsVisible = true;
                         SetEntityVisible(Game.PlayerPed.Handle, true, false);
                         StopDataCollection(playerEntity);
@@ -500,7 +504,7 @@ namespace DatasetGenerator.Client
 
 
             
-            if (dashcamMode && tickCounter>=60){
+            if (dashcamMode && tickCounter>=ticksBetweenPics){
                 SetCamViewModeForContext(0, 4);
                 SetCamViewModeForContext(1, 4);
                 SetCamViewModeForContext(2, 4);
@@ -510,7 +514,7 @@ namespace DatasetGenerator.Client
                 SetCamViewModeForContext(6, 4);
                 SetCamViewModeForContext(7, 4);
                 if(!canStart){ // if not ready to start
-                    if (tickCounter<1500){ //1500 
+                    if (tickCounter<750){ //1500 
                         tickCounter+=1;
                         SetFollowPedCamViewMode(4);
                     }else{ // next tick it will be ready 
@@ -523,8 +527,13 @@ namespace DatasetGenerator.Client
                     // Calculate the speed (magnitude of the velocity vector)
                     float speed = velocity.Length();
 
-                    if (speed>0){
-                        SetFollowPedCamViewMode(4);
+                    if (speed>1){
+                        ticksBetweenPics = ticksBetweenPicsBackup;
+                    }else{
+                        ticksBetweenPics = 250;
+                        //Debug.WriteLine($"Stopped: {ticksBetweenPics} frames between screenshots");
+                    }
+                    SetFollowPedCamViewMode(4);
                         ClearPedTasks(Game.PlayerPed.Handle);
                         FreezeVehicles(true);
                         if(vehiclesOnScreen){
@@ -544,7 +553,6 @@ namespace DatasetGenerator.Client
                         SetDriverAggressiveness(Game.PlayerPed.Handle, 0f);
 
                         TaskVehicleDriveWander(Game.PlayerPed.Handle, veh.Handle, GetVehicleModelMaxSpeed(model), 443);
-                    }
                     
                     tickCounter=0;
                 }
@@ -776,11 +784,11 @@ namespace DatasetGenerator.Client
                          int currentVeh = v.Handle;
                          if (playerVehicle!=null){
                               if (currentVeh!=playerVehicle.Handle){
-                                Debug.WriteLine($"Vehicle deleted: {currentVeh} {playerVehicle}");
+                                //Debug.WriteLine($"Vehicle deleted: {currentVeh} {playerVehicle}");
                                 DeleteEntity(ref currentVeh);
                             }  
                          }else{
-                             Debug.WriteLine($"Vehicle deleted: {currentVeh}");
+                             //Debug.WriteLine($"Vehicle deleted: {currentVeh}");
                             DeleteEntity(ref currentVeh);
                          }
                         
