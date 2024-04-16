@@ -55,6 +55,9 @@ namespace DatasetGenerator.Client
         private string metadataString = "";
         private bool saveMetadata = false;
         private bool vehiclesFrozen = false;
+
+        private bool canEnd = false;
+        private bool takingData = false;
         private DateTime start;
         private List<Vector3> vehicleVelocities;
         private Dictionary<int, Vector3> carVelocityDict ;
@@ -308,6 +311,7 @@ namespace DatasetGenerator.Client
             
 
             if(freezeMode){
+                vehiclesFrozen=true;
 
                 vehicleVelocities = new List<Vector3>{};
                 carVelocityDict = new Dictionary<int, Vector3>();
@@ -318,16 +322,20 @@ namespace DatasetGenerator.Client
 
                     Vector3 currentVel = GetEntityVelocity(currentVeh);
                     if((currentVel==new Vector3(0,0,0) || currentVel.Length()<targetSpeed/4) && !dashcamMode){ //Target speed /6   targetSpeed/4 7.5f currentVeh!=playerVehicle.Handle
-                        DeleteEntity(ref currentVeh);
+                        //DeleteEntity(ref currentVeh);
+                        v.IsVisible = false;
 
                     }else{
+                        if (v.Handle!=playerVehicle.Handle){
+                            v.IsVisible = true;
+                        }
                         carVelocityDict.Add(currentVeh, currentVel);
                         FreezeEntityPosition(currentVeh, true);
                     }
                     
                  }
                  
-                vehiclesFrozen=true;
+                
                 
             }else{
                 foreach(KeyValuePair<int, Vector3> item in carVelocityDict){
@@ -371,9 +379,9 @@ namespace DatasetGenerator.Client
 
             int playerEntity = Game.PlayerPed.Handle; // set this as a global variable is probably a good idea
             
-            if (collectMode || dashcamMode){
+            if ((collectMode || dashcamMode) &&!vehiclesFrozen){ //added this to stop tick timer while cars are frozen
                 tickCounter++;
-            }else{
+            }else if (!vehiclesFrozen){
                 tickCounter=0;
             }
             
@@ -474,6 +482,7 @@ namespace DatasetGenerator.Client
                                 TaskVehicleDriveWander(Game.PlayerPed.Handle, veh.Handle, GetVehicleModelMaxSpeed(model), 443);
                                 ticksBetweenPics = ticksBetweenPicsDashcam;
                                 playerVehicle.IsVisible = false;
+                                SetEntityInvincible(playerVehicle.Handle, true);
                                 SetEntityVisible(Game.PlayerPed.Handle, false, false);
                                 targetSpeed = 1f;
                                 tickCounter=0;
@@ -503,23 +512,96 @@ namespace DatasetGenerator.Client
                 #endregion
 
 
-            
-            if (dashcamMode && tickCounter>=ticksBetweenPics){
+            //if (dashcamMode){
+            //    SetGameplayCamRelativePitch(0f, 1f);
+            //    SetGameplayCamRelativeHeading(0f);
+            //}
+
+            /*if(dashcamMode){
+                SetGameplayCamRelativePitch(0f, 1f);
+                SetGameplayCamRelativeHeading(0f);
+            }*/
+
+            if(dashcamMode&&vehiclesFrozen&&!takingData){
+                if(!canStart){ // if not ready to start
+                    if (tickCounter<30){ //1500 
+                            tickCounter+=1;
+                            /*if (tickCounter % 10 == 0) {
+                                UpdateMetadata(true);
+                            }*/
+                            
+                            //SetGameplayCamRelativePitch(0f, 1f);
+                            //SetGameplayCamRelativeHeading(0f);
+                    }else{ // next tick it will be ready 
+                        canStart=true;
+                        tickCounter = 0;
+                    }
+                }else if(!takingData){
+                    
+                    takingData = true;
+                    //canStart=false;
+                    //Updates the metadata and updates coordinate variables
+                    UpdateMetadata(true);
+                    //Triggers the event to save the screenshot
+                    Debug.WriteLine($"Taking screenshot now: {takingData} {vehiclesFrozen} {tickCounter}");
+                    TriggerServerEvent("saveImg", saveDir, currentID); //See ../Server/ServerSaveScreenshot.lua
+                    
+                    Vector3 playerPosition = Game.PlayerPed.Position;
+                    // Add a blip to the map at the player's current position
+                    int blipHandle = AddBlipForCoord(playerPosition.X, playerPosition.Y, playerPosition.Z);
+                    // Customize the blip if needed
+                    SetBlipSprite(blipHandle, 1); // Set blip sprite to standard waypoint
+                    SetBlipColour(blipHandle, 5); // Set blip color to yellow
+                    SetBlipScale(blipHandle, 1.0f); // Set blip scale
+                    
+                    canStart=false;
+                    canEnd=true;
+                    
+                    
+                    
+                    //canStart=false;
+
+                }
+                
+
+            }
+
+            if(canEnd){
+                if(!canStart){ // if not ready to start
+                    if (tickCounter<30){ //1500 
+                        tickCounter+=1;
+                            //SetGameplayCamRelativePitch(0f, 1f);
+                            //SetGameplayCamRelativeHeading(0f);
+                    }else{ // next tick it will be ready 
+                        canStart=true;
+                        tickCounter = 0;
+                    }
+                }else{
+                    canEnd=false;
+                    FreezeVehicles(false);
+                    takingData=false;
+                }
+                
+            }
+
+            if ((dashcamMode && tickCounter>=ticksBetweenPics) && !vehiclesFrozen &&!takingData){
                 SetCamViewModeForContext(0, 4);
                 SetCamViewModeForContext(1, 4);
                 SetCamViewModeForContext(2, 4);
                 SetCamViewModeForContext(3, 4);
                 SetCamViewModeForContext(4, 4);
                 SetCamViewModeForContext(5, 4);
+                
                 SetCamViewModeForContext(6, 4);
                 SetCamViewModeForContext(7, 4);
                 if(!canStart){ // if not ready to start
-                    if (tickCounter<750){ //1500 
+                    if (tickCounter<300){ //1500 
                         tickCounter+=1;
                         SetFollowPedCamViewMode(4);
                     }else{ // next tick it will be ready 
                         SetFollowPedCamViewMode(4);
                         canStart= true;
+                        
                     }
                 }else{
                     Vector3 velocity = Game.PlayerPed.Velocity;
@@ -533,26 +615,36 @@ namespace DatasetGenerator.Client
                         ticksBetweenPics = 250;
                         //Debug.WriteLine($"Stopped: {ticksBetweenPics} frames between screenshots");
                     }
+                    
+
+                    FreezeVehicles(true);
                     SetFollowPedCamViewMode(4);
-                        ClearPedTasks(Game.PlayerPed.Handle);
-                        FreezeVehicles(true);
-                        if(vehiclesOnScreen){
-                            //Updates the metadata and updates coordinate variables
-                            UpdateMetadata(true);
-                            
-                            //Triggers the event to save the screenshot
-                            TriggerServerEvent("saveImg", saveDir, currentID); //See ../Server/ServerSaveScreenshot.lua
-                        }else{
-                            
-                            FreezeVehicles(false);
-                        }
-                        var veh = Game.PlayerPed.CurrentVehicle;
-                        var model = (uint)veh.Model.Hash;
+                    //ClearPedTasks(Game.PlayerPed.Handle);
+                    
 
-                        SetDriverAbility(Game.PlayerPed.Handle, 1f);
-                        SetDriverAggressiveness(Game.PlayerPed.Handle, 0f);
+                    // Set the camera's position and rotation to match the player's position and rotation
+                    //SetGameplayCamRelativePitch(0f, 1f);
+                    //SetGameplayCamRelativeHeading(0f);
+                    //hmm2
 
-                        TaskVehicleDriveWander(Game.PlayerPed.Handle, veh.Handle, GetVehicleModelMaxSpeed(model), 443);
+                    if(vehiclesOnScreen){
+                        canStart=false;
+                       
+                    }else{
+                        
+                        FreezeVehicles(false);
+                        
+                    }
+
+                    ClearPedTasks(Game.PlayerPed.Handle);
+                    var veh = Game.PlayerPed.CurrentVehicle;
+                    var model = (uint)veh.Model.Hash;
+
+                    SetDriverAbility(Game.PlayerPed.Handle, 1f);
+                    SetDriverAggressiveness(Game.PlayerPed.Handle, 0f);
+
+                    TaskVehicleDriveWander(Game.PlayerPed.Handle, veh.Handle, GetVehicleModelMaxSpeed(model), 443);
+                   
                     
                     tickCounter=0;
                 }
@@ -599,10 +691,15 @@ namespace DatasetGenerator.Client
 
                         if(vehiclesOnScreen){
                             //Updates the metadata and updates coordinate variables
-                            UpdateMetadata(true);
                             
+                            UpdateMetadata(true);
+                            // Set the camera's position and rotation to match the player's position and rotation
+                            //SetGameplayCamRelativePitch(0f, 1f);
+                            //SetGameplayCamRelativeHeading(0f);
+                            //hmm2
                             //Triggers the event to save the screenshot
                             TriggerServerEvent("saveImg", saveDir, currentID); //See ../Server/ServerSaveScreenshot.lua
+                            FreezeVehicles(false);
                         }else{
                             FreezeVehicles(false);
                         }
@@ -731,7 +828,7 @@ namespace DatasetGenerator.Client
                         
 
                         SetDrawOrigin(vehicleBox.X, vehicleBox.Y, vehicleBox.Z, 0);
-                        DrawTextOnScreen($"{currentXCoord},{currentYCoord} {hit} {counter}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                        //DrawTextOnScreen($"{currentXCoord},{currentYCoord} {hit} {counter}", 0f, 0f, 0.3f, Alignment.Center, 0); //shows text on screen
                         ClearDrawOrigin();
                     }
                     
@@ -748,11 +845,11 @@ namespace DatasetGenerator.Client
                 int maxY = pointCoordsY.Max();
 
                 
-                if(debugMode){
+                /*if(debugMode){
                     SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z+1.5f, 0);
-                    DrawTextOnScreen($"{v.DisplayName}\n{v.ClassLocalizedName} Total number of vehicles: {vehicleCount}  out of {vehicles.Count}", 0f, 0f, 0.3f, Alignment.Center, 0); // 
+                    //DrawTextOnScreen($"{v.DisplayName}\n{v.ClassLocalizedName} Total number of vehicles: {vehicleCount}  out of {vehicles.Count}", 0f, 0f, 0.3f, Alignment.Center, 0); // 
                     ClearDrawOrigin();
-                }
+                }*/
 
 
                 // Calculate the center point of the rectangle
@@ -772,11 +869,20 @@ namespace DatasetGenerator.Client
                 
                 if ((minX >= 0 && minY >= 0 && maxX < xScreen && maxY < yScreen) && v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)){ //If the full bounding box is on the screen
                     vehiclesOnScreen = true;
+                    if (playerVehicle!=null){
+                        if (v.Handle!=playerVehicle.Handle){
+                        v.IsVisible = true;
+                    }
+                    }
+                    
+                    
                     if(showBoxMode){
                         DrawRect(relativeX, relativeY, relativeWidth, relativeHeight, 100, 255, 255, 150);
                     }
                     
                     if(save){
+                        // Set the camera's position and rotation to match the player's position and rotation
+                        //DrawRect(relativeX, relativeY, relativeWidth, relativeHeight, 255, 0, 0, 150);
                         metadataList.Add($"{v.ClassDisplayName.Split('_').Last()} {relativeX} {relativeY} {relativeWidth} {relativeHeight} {keypointsX[0]} {keypointsY[0]} {visible[0]} {keypointsX[1]} {keypointsY[1]} {visible[1]} {keypointsX[2]} {keypointsY[2]} {visible[2]} {keypointsX[3]} {keypointsY[3]} {visible[3]} {keypointsX[4]} {keypointsY[4]} {visible[4]} {keypointsX[5]} {keypointsY[5]} {visible[5]} {keypointsX[6]} {keypointsY[6]} {visible[6]} {keypointsX[7]} {keypointsY[7]} {visible[7]}\n"); //TODO: Fix this issue with the number
                     } //
                 }else{
@@ -785,11 +891,13 @@ namespace DatasetGenerator.Client
                          if (playerVehicle!=null){
                               if (currentVeh!=playerVehicle.Handle){
                                 //Debug.WriteLine($"Vehicle deleted: {currentVeh} {playerVehicle}");
-                                DeleteEntity(ref currentVeh);
+                                //DeleteEntity(ref currentVeh);
+                                v.IsVisible = false;
                             }  
                          }else{
                              //Debug.WriteLine($"Vehicle deleted: {currentVeh}");
-                            DeleteEntity(ref currentVeh);
+                            //DeleteEntity(ref currentVeh);
+                            v.IsVisible = false;
                          }
                         
                          
@@ -799,17 +907,19 @@ namespace DatasetGenerator.Client
                 }
             }
             if(save){
-                //Debug.WriteLine("UPDATED METADATA");
+                 
+                        //Debug.WriteLine("UPDATED METADATA");
+                }
             }
-        }
         private void SaveMetadata(){
 
             //FreezeVehicles(false);
             //Debug.Write("SAVING METADATA");
             var metadataString =String.Join("",metadataList);
+            //UpdateMetadata(true); //hmmm remove
             TriggerServerEvent("saveData", saveDir, currentID, metadataString);
             currentID++;
-            FreezeVehicles(false);
+            //FreezeVehicles(false);
             
         }
         private void ChangeLocation(int locationIndex, int player){
