@@ -45,7 +45,9 @@ namespace DatasetGenerator.Client
         private int ticksBetweenPicsDashcam = 120;
 
         
-        string saveDir = @"F:\Programming\Dissertation-mk2\dataset\";
+        //string saveDir = @"F:\Programming\Dissertation-mk2\dataset\";
+        string saveDir = @"D:\Dissertation\dataset\";
+        
 
         private List<Vehicle> vehicles = new List<Vehicle>();
         private Vector3 playerPos;
@@ -283,7 +285,9 @@ namespace DatasetGenerator.Client
             picsFromLocation = 10;
             locations = new Location[]{
                 //new Location(new Vector3(-106.6908f, -519.0898f, 39.84289f), 0f, new Vector3(0f, 0f, -8.321015f), -30.22839f, 10f, picsFromLocation, true),
-                new Location(new Vector3(-396.6956f, 258.3295f, 84.95533f), -0.08379275f, new Vector3(0f, 0f, -169.8985f), -9.746197f, 10f, picsFromLocation, true),
+
+
+                /*new Location(new Vector3(-396.6956f, 258.3295f, 84.95533f), -0.08379275f, new Vector3(0f, 0f, -169.8985f), -9.746197f, 10f, picsFromLocation, true),
                 new Location(new Vector3(-684.6088f, -1201.297f, 11.48662f), 6.830189E-06f, new Vector3(0f, 0f, 99.10529f), -4.075363f, 10f, picsFromLocation, true),
                 new Location(new Vector3(-1099.225f, -1308.184f, 6.221095f), 1.366038E-05f, new Vector3(0f, 0f, 114.9308f), 0.3984259f, 10f, picsFromLocation, true),
                 new Location(new Vector3(-996.4599f, -856.6437f, 14.02444f), -0.08833483f, new Vector3(0f, 0f, 69.45237f), -6.899021f, 10f, picsFromLocation, true),
@@ -294,7 +298,20 @@ namespace DatasetGenerator.Client
                 new Location(new Vector3(-1098.779f, -729.7245f, 24.64202f), 0f, new Vector3(0f, 0f, 41.71575f), -26.91467f, 10f, picsFromLocation, true),
                 new Location(new Vector3(-801.694f, -78.85551f, 61.41818f), -3.415094E-06f, new Vector3(0f, 0f, -48.00604f), -51.43717f, 10f, picsFromLocation, true),
                 new Location(new Vector3(-781.9294f, 217.2976f, 77.67545f), 0f, new Vector3(0f, 0f, -100.372f), -24.58274f, 10f, picsFromLocation, true),
-                new Location(new Vector3(241.6309f, 305.2818f, 106.5246f), 0f, new Vector3(0f, 0f, -16.41452f), -9.46713f, 10f, picsFromLocation, true),
+                new Location(new Vector3(241.6309f, 305.2818f, 106.5246f), 0f, new Vector3(0f, 0f, -16.41452f), -9.46713f, 10f, picsFromLocation, true),*/
+
+                new Location(new Vector3(-396.6956f, 258.3295f, 84.95533f), -0.08379275f, new Vector3(0f, 0f, -169.8985f), -9.746197f, 10f, picsFromLocation, false),
+                new Location(new Vector3(-684.6088f, -1201.297f, 11.48662f), 6.830189E-06f, new Vector3(0f, 0f, 99.10529f), -4.075363f, 10f, picsFromLocation, false),
+                new Location(new Vector3(-1099.225f, -1308.184f, 6.221095f), 1.366038E-05f, new Vector3(0f, 0f, 114.9308f), 0.3984259f, 10f, picsFromLocation, false),
+                new Location(new Vector3(-996.4599f, -856.6437f, 14.02444f), -0.08833483f, new Vector3(0f, 0f, 69.45237f), -6.899021f, 10f, picsFromLocation, false),
+                new Location(new Vector3(-1013.158f, -852.0976f, 17.15666f), 0f, new Vector3(0f, 0f, -29.30029f), -18.85762f, 10f, picsFromLocation, false),
+                new Location(new Vector3(-924.1362f, -543.504f, 25.23962f), -8.537736E-07f, new Vector3(0f, 0f, -14.02249f), -19.26244f, 10f, picsFromLocation, false),
+                new Location(new Vector3(-941.0885f, -554.3464f, 33.30359f), 6.830189E-06f, new Vector3(0f, 0f, 110.3936f), -39.78363f, 10f, picsFromLocation, false),
+                new Location(new Vector3(-1099.231f, -673.6322f, 25.81387f), 1.366038E-05f, new Vector3(0f, 0f, 135.4087f), -13.31058f, 10f, picsFromLocation, false),
+                new Location(new Vector3(-1098.779f, -729.7245f, 24.64202f), 0f, new Vector3(0f, 0f, 41.71575f), -26.91467f, 10f, picsFromLocation, false),
+                new Location(new Vector3(-801.694f, -78.85551f, 61.41818f), -3.415094E-06f, new Vector3(0f, 0f, -48.00604f), -51.43717f, 10f, picsFromLocation, false),
+                new Location(new Vector3(-781.9294f, 217.2976f, 77.67545f), 0f, new Vector3(0f, 0f, -100.372f), -24.58274f, 10f, picsFromLocation, false),
+                new Location(new Vector3(241.6309f, 305.2818f, 106.5246f), 0f, new Vector3(0f, 0f, -16.41452f), -9.46713f, 10f, picsFromLocation, false),
             };
             
             TriggerServerEvent("generateDirs", $"{saveDir}\\images", $"{saveDir}\\labels");
@@ -322,21 +339,21 @@ namespace DatasetGenerator.Client
 
                     Vector3 currentVel = GetEntityVelocity(currentVeh);
                     if((currentVel==new Vector3(0,0,0) || currentVel.Length()<targetSpeed/4) && !dashcamMode){ //Target speed /6   targetSpeed/4 7.5f currentVeh!=playerVehicle.Handle
-                        //DeleteEntity(ref currentVeh);
-                        v.IsVisible = false;
+                        DeleteEntity(ref currentVeh);
+                        //v.IsVisible = false;
 
                     }else{
-                        if (v.Handle!=playerVehicle.Handle){
+                        if (playerVehicle!=null){
+                            if (v.Handle!=playerVehicle.Handle){
                             v.IsVisible = true;
+                            }
                         }
                         carVelocityDict.Add(currentVeh, currentVel);
+                        //Debug.WriteLine($"Freezing");
                         FreezeEntityPosition(currentVeh, true);
                     }
                     
-                 }
-                 
-                
-                
+                 }    
             }else{
                 foreach(KeyValuePair<int, Vector3> item in carVelocityDict){
                         int currentVehicle = item.Key;
@@ -430,6 +447,7 @@ namespace DatasetGenerator.Client
                         targetSpeed = currentLocation.GetSpeed();
                         currentLocation.SetLocation(playerEntity);
                         collectMode=true;
+                        canStart=false;
                         
                     }else{
                         StopDataCollection(playerEntity);
@@ -543,7 +561,7 @@ namespace DatasetGenerator.Client
                     //Updates the metadata and updates coordinate variables
                     UpdateMetadata(true);
                     //Triggers the event to save the screenshot
-                    Debug.WriteLine($"Taking screenshot now: {takingData} {vehiclesFrozen} {tickCounter}");
+                    //Debug.WriteLine($"Taking screenshot now: {takingData} {vehiclesFrozen} {tickCounter}");
                     TriggerServerEvent("saveImg", saveDir, currentID); //See ../Server/ServerSaveScreenshot.lua
                     
                     Vector3 playerPosition = Game.PlayerPed.Position;
@@ -652,10 +670,10 @@ namespace DatasetGenerator.Client
             }
 
 
-            if (collectMode && tickCounter>=ticksBetweenPics){ // ready to take an image 
-                
+            if (collectMode && tickCounter>=ticksBetweenPics&&!takingData){ // ready to take an image 
+                //Debug.WriteLine($"{tickCounter}");
                 if(!canStart){ // if not ready to start
-                    if (tickCounter<1500){ //1500 
+                    if (tickCounter<500){ //1500 
                         tickCounter+=1;
                     }else{ // next tick it will be ready 
                         canStart= true;
@@ -691,7 +709,7 @@ namespace DatasetGenerator.Client
 
                         if(vehiclesOnScreen){
                             //Updates the metadata and updates coordinate variables
-                            
+                            takingData = true;
                             UpdateMetadata(true);
                             // Set the camera's position and rotation to match the player's position and rotation
                             //SetGameplayCamRelativePitch(0f, 1f);
@@ -699,7 +717,9 @@ namespace DatasetGenerator.Client
                             //hmm2
                             //Triggers the event to save the screenshot
                             TriggerServerEvent("saveImg", saveDir, currentID); //See ../Server/ServerSaveScreenshot.lua
-                            FreezeVehicles(false);
+                            canStart=false;
+                            canEnd=true;
+                            //FreezeVehicles(false);
                         }else{
                             FreezeVehicles(false);
                         }
@@ -871,9 +891,11 @@ namespace DatasetGenerator.Client
                     vehiclesOnScreen = true;
                     if (playerVehicle!=null){
                         if (v.Handle!=playerVehicle.Handle){
-                        v.IsVisible = true;
-                    }
-                    }
+                            v.IsVisible = true;
+                        }
+                    }else{
+                            v.IsVisible = true;
+                        }
                     
                     
                     if(showBoxMode){
