@@ -37,9 +37,9 @@ namespace DatasetGenerator.Client
         public static int collectKey = 288; //f1
         public static int carOnlyCollectKey = 168; //f8
         public static int dashcamCollectKey = 111; //Num 8
-        internal static float entityRange = 15000f;//10000f;//15000f;
+        internal static float entityRange = 7500f;//10000f;//15000f;
         public float targetSpeed = 30f;
-        private int picsFromLocation = 50;
+        private int picsPerCondition = 50;
         private int ticksBetweenPicsBackup = 90;
         private int ticksBetweenPics = 90;
         private int ticksBetweenPicsDashcam = 120;
@@ -47,7 +47,7 @@ namespace DatasetGenerator.Client
 
         
         //string saveDir = @"F:\Programming\Dissertation-mk2\dataset\";
-        string saveDir = @"D:\Dissertation\dataset\";
+        string saveDir = @"F:\Programming\Dissertation-mk2\dataset\";
         
 
         private List<Vehicle> vehicles = new List<Vehicle>();
@@ -299,39 +299,54 @@ namespace DatasetGenerator.Client
             
             Debug.WriteLine($" DatasetGenerator.Client activated at [{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]");
 
-            
-            picsFromLocation = 10;  //*12 *number of locations
+            bool testMode = false;
+            picsPerCondition =50;
             locations = new Location[]{
                 //new Location(new Vector3(-106.6908f, -519.0898f, 39.84289f), 0f, new Vector3(0f, 0f, -8.321015f), -30.22839f, 10f, picsFromLocation, true),
 
-
-                /*new Location(new Vector3(-396.6956f, 258.3295f, 84.95533f), -0.08379275f, new Vector3(0f, 0f, -169.8985f), -9.746197f, 10f, picsFromLocation, true),
-                new Location(new Vector3(-684.6088f, -1201.297f, 11.48662f), 6.830189E-06f, new Vector3(0f, 0f, 99.10529f), -4.075363f, 10f, picsFromLocation, true),
-                new Location(new Vector3(-1099.225f, -1308.184f, 6.221095f), 1.366038E-05f, new Vector3(0f, 0f, 114.9308f), 0.3984259f, 10f, picsFromLocation, true),
-                new Location(new Vector3(-996.4599f, -856.6437f, 14.02444f), -0.08833483f, new Vector3(0f, 0f, 69.45237f), -6.899021f, 10f, picsFromLocation, true),
-                new Location(new Vector3(-1013.158f, -852.0976f, 17.15666f), 0f, new Vector3(0f, 0f, -29.30029f), -18.85762f, 10f, picsFromLocation, true),
-                new Location(new Vector3(-924.1362f, -543.504f, 25.23962f), -8.537736E-07f, new Vector3(0f, 0f, -14.02249f), -19.26244f, 10f, picsFromLocation, true),
-                new Location(new Vector3(-941.0885f, -554.3464f, 33.30359f), 6.830189E-06f, new Vector3(0f, 0f, 110.3936f), -39.78363f, 10f, picsFromLocation, true),
-                new Location(new Vector3(-1099.231f, -673.6322f, 25.81387f), 1.366038E-05f, new Vector3(0f, 0f, 135.4087f), -13.31058f, 10f, picsFromLocation, true),
-                new Location(new Vector3(-1098.779f, -729.7245f, 24.64202f), 0f, new Vector3(0f, 0f, 41.71575f), -26.91467f, 10f, picsFromLocation, true),
-                new Location(new Vector3(-801.694f, -78.85551f, 61.41818f), -3.415094E-06f, new Vector3(0f, 0f, -48.00604f), -51.43717f, 10f, picsFromLocation, true),
-                new Location(new Vector3(-781.9294f, 217.2976f, 77.67545f), 0f, new Vector3(0f, 0f, -100.372f), -24.58274f, 10f, picsFromLocation, true),
-                new Location(new Vector3(241.6309f, 305.2818f, 106.5246f), 0f, new Vector3(0f, 0f, -16.41452f), -9.46713f, 10f, picsFromLocation, true),*/
-
-                new Location(new Vector3(-396.6956f, 258.3295f, 84.95533f), -0.08379275f, new Vector3(0f, 0f, -169.8985f), -9.746197f, 10f, picsFromLocation, false),
-                new Location(new Vector3(-684.6088f, -1201.297f, 11.48662f), 6.830189E-06f, new Vector3(0f, 0f, 99.10529f), -4.075363f, 10f, picsFromLocation, false),
-                new Location(new Vector3(-1099.225f, -1308.184f, 6.221095f), 1.366038E-05f, new Vector3(0f, 0f, 114.9308f), 0.3984259f, 10f, picsFromLocation, false),
-                new Location(new Vector3(-996.4599f, -856.6437f, 14.02444f), -0.08833483f, new Vector3(0f, 0f, 69.45237f), -6.899021f, 10f, picsFromLocation, false),
-                new Location(new Vector3(-1013.158f, -852.0976f, 17.15666f), 0f, new Vector3(0f, 0f, -29.30029f), -18.85762f, 10f, picsFromLocation, false),
+                 // Highways
+                new Location(new Vector3(-1789.430f, -650.141f, 20f), 5.567f, new Vector3(0.000f, 0.000f, 5.567f),-17.59277f, 30f, picsPerCondition, testMode),
+                new Location(new Vector3(-2681.45f, 2616.035f, 19.39864f), -6.830189E-06f, new Vector3(0f, 0f, -47.18701f), -2.454675f, 30f, picsPerCondition, testMode),
+                new Location(new Vector3(-1162.208f, 5250.1f, 75.11191f), 6.830189E-06f, new Vector3(0f, 0f, 71.09592f), -31.23303f, 30f, picsPerCondition, testMode),
+                new Location(new Vector3(2609.129f, 5170.345f, 69.45427f), -1.366038E-05f, new Vector3(0f, 0f, -171.2556f), -35.15601f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(2437.065f, 2930.025f, 53.70098f), 1.366038E-05f, new Vector3(0f, 0f, 127.0705f), -29.16621f, 10f, picsPerCondition, testMode),//new Location(new Vector3(2432.474f, 2928.731f, 57.77627f), 1.366038E-05f, new Vector3(0f, 0f, 128.9702f), -31.85179f, 10f, picsPerCondition, testMode),
+                // Urban
+                new Location(new Vector3(1769.527f, 3540.025f, 36.594f), 339.961f, new Vector3(0.000f, 0.000f, -20.039f),-1.670777f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-640.952f, -1531.846f, 22.94387f), 6.830189E-06f, new Vector3(0f, 0f, 103.7186f), -10.77995f, 10f, picsPerCondition, testMode), //slow
+                new Location(new Vector3(-294.5515f, -1821.041f, 49.27009f), -6.830189E-06f, new Vector3(0f, 0f, -104.069f), -20.70007f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(81.70882f, -1906.543f, 25.84157f), 3.415094E-06f, new Vector3(0f, 0f, 42.32573f), -6.533714f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(910.7935f, -2470.437f, 28.65929f), 0f, new Vector3(0f, 0f, 41.96225f), 1.877675f, 10f, picsPerCondition, testMode),
                 
-                new Location(new Vector3(-924.1362f, -543.504f, 25.23962f), -8.537736E-07f, new Vector3(0f, 0f, -14.02249f), -19.26244f, 10f, picsFromLocation, false),
-                new Location(new Vector3(-941.0885f, -554.3464f, 33.30359f), 6.830189E-06f, new Vector3(0f, 0f, 110.3936f), -39.78363f, 10f, picsFromLocation, false),
-                new Location(new Vector3(-1099.231f, -673.6322f, 25.81387f), 1.366038E-05f, new Vector3(0f, 0f, 135.4087f), -13.31058f, 10f, picsFromLocation, false),
-                new Location(new Vector3(-1098.779f, -729.7245f, 24.64202f), 0f, new Vector3(0f, 0f, 41.71575f), -26.91467f, 10f, picsFromLocation, false),
-                new Location(new Vector3(-801.694f, -78.85551f, 61.41818f), -3.415094E-06f, new Vector3(0f, 0f, -48.00604f), -51.43717f, 10f, picsFromLocation, false),
+                new Location(new Vector3(1389.423f, -1631.4f, 63.67603f), 6.830189E-06f, new Vector3(0f, 0f, 75.31506f), -13.27346f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(1134.769f, -523.7743f, 70.09505f), -0.08037766f, new Vector3(0f, 0f, -81.28288f), -7.439734f, 10f, picsPerCondition, testMode),//new Location(new Vector3(1125.738f, -513.2305f, 72.53145f), -6.830189E-06f, new Vector3(0f, 0f, -98.63248f), -6.08167f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(1065.598f, -534.1071f, 64.73195f), 6.830189E-06f, new Vector3(0f, 0f, 97.7282f), -3.598453f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(863.1425f, -511.2666f, 58.13159f), -1.366038E-05f, new Vector3(0f, 0f, -139.1936f), 2.177621f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(548.1376f, -189.2076f, 79.43042f), 6.830189E-06f, new Vector3(0f, 0f, 58.4398f), -21.22769f, 10f, picsPerCondition, testMode),
                 
-                new Location(new Vector3(-781.9294f, 217.2976f, 77.67545f), 0f, new Vector3(0f, 0f, -100.372f), -24.58274f, 10f, picsFromLocation, false),
-                new Location(new Vector3(241.6309f, 305.2818f, 106.5246f), 0f, new Vector3(0f, 0f, -16.41452f), -9.46713f, 10f, picsFromLocation, false),
+                new Location(new Vector3(367.6646f, 116.7666f, 109.1424f), 1.366038E-05f, new Vector3(0f, 0f, 119.7441f), -19.6664f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(199.72f, 211.8542f, 109.1424f), 6.830189E-06f, new Vector3(0f, 0f, 103.8686f), -4.056938f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-917.3553f, 222.5634f, 70.46163f), -4.268868E-07f, new Vector3(0f, 0f, -5.603947f), -1.524998f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-1812.643f, 741.5195f, 147.9204f), 6.830189E-06f, new Vector3(0f, 0f, 93.5533f), -13.79819f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-1561.443f, 2141.757f, 63.60139f), -6.830189E-06f, new Vector3(0f, 0f, -95.46081f), -4.624403f, 10f, picsPerCondition, testMode),
+
+                // New City locations
+                new Location(new Vector3(-396.6956f, 258.3295f, 84.95533f), -0.08379275f, new Vector3(0f, 0f, -169.8985f), -9.746197f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-684.6088f, -1201.297f, 11.48662f), 6.830189E-06f, new Vector3(0f, 0f, 99.10529f), -4.075363f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-1099.225f, -1308.184f, 6.221095f), 1.366038E-05f, new Vector3(0f, 0f, 114.9308f), 0.3984259f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-996.4599f, -856.6437f, 14.02444f), -0.08833483f, new Vector3(0f, 0f, 69.45237f), -6.899021f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-1123.72f, -1337.818f, 11.41242f), 3.415094E-06f, new Vector3(0f, 0f, 51.71848f), -12.19378f, 10f, picsPerCondition, testMode),//new Location(new Vector3(-1013.158f, -852.0976f, 17.15666f), 0f, new Vector3(0f, 0f, -29.30029f), -18.85762f, 10f, picsPerCondition, testMode),
+                
+                new Location(new Vector3(-924.1362f, -543.504f, 25.23962f), -8.537736E-07f, new Vector3(0f, 0f, -14.02249f), -19.26244f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-941.0885f, -554.3464f, 33.30359f), 6.830189E-06f, new Vector3(0f, 0f, 110.3936f), -39.78363f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-1087.42f, -669.5455f, 31.80692f), 6.830189E-06f, new Vector3(0f, 0f, 90.27394f), -27.87856f, 10f, picsPerCondition, testMode),//new Location(new Vector3(-1099.231f, -673.6322f, 25.81387f), 1.366038E-05f, new Vector3(0f, 0f, 135.4087f), -13.31058f, 10f, picsPerCondition, testMode),  
+                new Location(new Vector3(54.78693f, -761.6329f, 48.47496f), -0.08438015f, new Vector3(0f, 0f, 87.01579f), -18.66828f, 10f, picsPerCondition, testMode),//new Location(new Vector3(-1098.779f, -729.7245f, 24.64202f), 0f, new Vector3(0f, 0f, 41.71575f), -26.91467f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-801.694f, -78.85551f, 61.41818f), -3.415094E-06f, new Vector3(0f, 0f, -48.00604f), -51.43717f, 10f, picsPerCondition, testMode),
+                
+                new Location(new Vector3(-781.9294f, 217.2976f, 77.67545f), 0f, new Vector3(0f, 0f, -100.372f), -24.58274f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(2437.065f, 2930.025f, 53.70098f), 1.366038E-05f, new Vector3(0f, 0f, 127.0705f), -29.16621f, 10f, picsPerCondition, testMode),//new Location(new Vector3(241.6309f, 305.2818f, 106.5246f), 0f, new Vector3(0f, 0f, -16.41452f), -9.46713f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-99.78148f, -124.4792f, 66.23969f), -3.415094E-06f, new Vector3(0f, 0f, -34.13422f), -24.21855f, 10f, picsPerCondition, testMode),//new Location(new Vector3(-77.56629f, -68.11481f, 75.74409f), -1.366038E-05f, new Vector3(0f, 0f, -177.6649f), -39.62478f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-325.806f, -885.0453f, 48.75237f), -3.415094E-06f, new Vector3(0f, 0f, -44.97601f), -25.67531f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(361.7188f, -1971.461f, 29.44312f), 0f, new Vector3(0f, 0f, -32.37278f), -6.740258f, 10f, picsPerCondition, testMode),
             };
             
             TriggerServerEvent("generateDirs", $"{saveDir}\\images", $"{saveDir}\\labels");
@@ -570,8 +585,8 @@ namespace DatasetGenerator.Client
                     Vector3 pRotation = GetEntityRotation(playerEntity,2);
                     float pPitch = GetGameplayCamRelativePitch();
                     float carSpeedTarget = 10f;
-                    //Debug.WriteLine($"PITCH:{GetGameplayCamRelativePitch()}");
-                    Debug.WriteLine($" new Location(new Vector3({pCoords.X}f, {pCoords.Y}f, {pCoords.Z}f), {pHeading}f, new Vector3({pRotation.X}f, {pRotation.Y}f, {pRotation.Z}f), {pPitch}f, {carSpeedTarget}f, {"picsFromLocation"}, true),");
+                    //Debug.WriteLine($"PITCH:{GetGameplayCamRelativePitch()}"); //, picsPerCondition, testMode
+                    Debug.WriteLine($" new Location(new Vector3({pCoords.X}f, {pCoords.Y}f, {pCoords.Z}f), {pHeading}f, new Vector3({pRotation.X}f, {pRotation.Y}f, {pRotation.Z}f), {pPitch}f, {carSpeedTarget}f, {"picsPerCondition"}, testMode),");
                     //new Location(new Vector3(1769.527f, 3540.025f, 36.594f), 339.961f, new Vector3(0.000f, 0.000f, -20.039f),-1.670777f, 30);
                     
                 }
@@ -746,7 +761,7 @@ namespace DatasetGenerator.Client
 
             if(canEnd){
                 if(!canStart){ // if not ready to start
-                    if (tickCounter<30){ //1500 
+                    if (tickCounter<10){ //1500 
                         tickCounter+=1;
                             //SetGameplayCamRelativePitch(0f, 1f);
                             //SetGameplayCamRelativeHeading(0f);
@@ -1195,6 +1210,14 @@ namespace DatasetGenerator.Client
 
             FreezeEntityPosition(player, true);
             SetEntityInvincible(player, true);
+
+            Vector3 playerPosition = Game.PlayerPed.Position;
+            // Add a blip to the map at the player's current position
+            int blipHandle = AddBlipForCoord(playerPosition.X, playerPosition.Y, playerPosition.Z);
+            // Customize the blip if needed
+            SetBlipSprite(blipHandle, 1); // Set blip sprite to standard waypoint
+            SetBlipColour(blipHandle, 5); // Set blip color to yellow
+            SetBlipScale(blipHandle, 1.0f); // Set blip scale
                         
         }
 
