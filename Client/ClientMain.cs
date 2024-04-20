@@ -43,6 +43,7 @@ namespace DatasetGenerator.Client
         private int ticksBetweenPicsBackup = 90;
         private int ticksBetweenPics = 90;
         private int ticksBetweenPicsDashcam = 120;
+        Random random = new Random();
 
         
         //string saveDir = @"F:\Programming\Dissertation-mk2\dataset\";
@@ -73,6 +74,23 @@ namespace DatasetGenerator.Client
         private int currentLocationIndex = 0;
 
         private bool generateTestDataset=true;
+
+         string[] vehicleNames = {
+            "adder", "cheetah", "entityxf", "zentorno", "t20", //Super
+            "seminole", "rocoto", "gresley", "baller", "baller2", //SUV
+            "burrito", "rumpo", "pony", "speedo", "youga", //vans
+            "rapidgt", "carbonizzare", "banshee", "massacro", "pariah", // sports
+            "asterope", "intruder", "primo", "stanier", "schafter2", //Sedan
+            "dominator", "gauntlet", "vigero", "stalion", "dominator3", //Muscle
+            "kamacho", "rebel2", "sandking2", "mesa3", "rancherxl", //off-road
+            "bati", "sanchez2", "hakuchou", "zombieb", "fcr", //Motorbikes
+            "tribike3", "scorcher", "bmx", "fixter", "cruiser", //Cycles
+            "oracle", "felon", "jackal", "sentinel2", "zion", //coupe
+            "phantom", "benson", "mule", "biff", "stockade", //commercial 
+            "issi3", "brioso", "rhapsody", "panto", "issi2", // compacts
+        
+        
+        };
         /*private int[] times = {0,6,12,18};
         string[] weathers = {"CLEAR", "RAIN", "FOGGY", "SNOW"};*/
         
@@ -282,7 +300,7 @@ namespace DatasetGenerator.Client
             Debug.WriteLine($" DatasetGenerator.Client activated at [{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]");
 
             
-            picsFromLocation = 10;
+            picsFromLocation = 10;  //*12 *number of locations
             locations = new Location[]{
                 //new Location(new Vector3(-106.6908f, -519.0898f, 39.84289f), 0f, new Vector3(0f, 0f, -8.321015f), -30.22839f, 10f, picsFromLocation, true),
 
@@ -305,11 +323,13 @@ namespace DatasetGenerator.Client
                 new Location(new Vector3(-1099.225f, -1308.184f, 6.221095f), 1.366038E-05f, new Vector3(0f, 0f, 114.9308f), 0.3984259f, 10f, picsFromLocation, false),
                 new Location(new Vector3(-996.4599f, -856.6437f, 14.02444f), -0.08833483f, new Vector3(0f, 0f, 69.45237f), -6.899021f, 10f, picsFromLocation, false),
                 new Location(new Vector3(-1013.158f, -852.0976f, 17.15666f), 0f, new Vector3(0f, 0f, -29.30029f), -18.85762f, 10f, picsFromLocation, false),
+                
                 new Location(new Vector3(-924.1362f, -543.504f, 25.23962f), -8.537736E-07f, new Vector3(0f, 0f, -14.02249f), -19.26244f, 10f, picsFromLocation, false),
                 new Location(new Vector3(-941.0885f, -554.3464f, 33.30359f), 6.830189E-06f, new Vector3(0f, 0f, 110.3936f), -39.78363f, 10f, picsFromLocation, false),
                 new Location(new Vector3(-1099.231f, -673.6322f, 25.81387f), 1.366038E-05f, new Vector3(0f, 0f, 135.4087f), -13.31058f, 10f, picsFromLocation, false),
                 new Location(new Vector3(-1098.779f, -729.7245f, 24.64202f), 0f, new Vector3(0f, 0f, 41.71575f), -26.91467f, 10f, picsFromLocation, false),
                 new Location(new Vector3(-801.694f, -78.85551f, 61.41818f), -3.415094E-06f, new Vector3(0f, 0f, -48.00604f), -51.43717f, 10f, picsFromLocation, false),
+                
                 new Location(new Vector3(-781.9294f, 217.2976f, 77.67545f), 0f, new Vector3(0f, 0f, -100.372f), -24.58274f, 10f, picsFromLocation, false),
                 new Location(new Vector3(241.6309f, 305.2818f, 106.5246f), 0f, new Vector3(0f, 0f, -16.41452f), -9.46713f, 10f, picsFromLocation, false),
             };
@@ -322,7 +342,7 @@ namespace DatasetGenerator.Client
         }
 
 
-        private void FreezeVehicles(bool freezeMode){
+        private async void FreezeVehicles(bool freezeMode){
 
             Vehicle[] allNearbyCars = World.GetAllVehicles();
             
@@ -335,11 +355,14 @@ namespace DatasetGenerator.Client
 
                 foreach (Vehicle v in allNearbyCars){
                     int currentVeh = v.Handle;
-
-
                     Vector3 currentVel = GetEntityVelocity(currentVeh);
                     if((currentVel==new Vector3(0,0,0) || currentVel.Length()<targetSpeed/4) && !dashcamMode){ //Target speed /6   targetSpeed/4 7.5f currentVeh!=playerVehicle.Handle
+                        if(DoesEntityExist(v.Driver.Handle)){
+                                                            v.Driver.Delete();
+                                                        }
                         DeleteEntity(ref currentVeh);
+                       
+                        
                         //v.IsVisible = false;
 
                     }else{
@@ -355,22 +378,159 @@ namespace DatasetGenerator.Client
                     
                  }    
             }else{
+                //Debug.WriteLine($"hello there");
                 foreach(KeyValuePair<int, Vector3> item in carVelocityDict){
-                        int currentVehicle = item.Key;
-                        Vector3 currentVelocity = item.Value;
-                        FreezeEntityPosition(currentVehicle, false);
-                        float currentSpeed = currentVelocity.Length();
                         
-                        if(currentVelocity.Length()<targetSpeed){
-                            float modifier = 1+(targetSpeed-currentVelocity.Length())/(targetSpeed*2); //*2
-                            SetEntityVelocity(currentVehicle,currentVelocity.X*modifier,currentVelocity.Y*modifier,currentVelocity.Z); //1.35f
+                        int currentVehicle = item.Key;
+                        Vehicle v = new Vehicle(currentVehicle);
+                        
+                        if(v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)){
+                            
+
+                            
+                            int randomIndex = random.Next(0, vehicleNames.Length);
+                            var vehicleHash = (uint)GetHashKey(vehicleNames[randomIndex]);
+
+                            RequestModel(vehicleHash);
+                            while (!HasModelLoaded(vehicleHash))
+                            {
+                                await Delay(0);
+                            }
+                            //Debug.WriteLine($"hmm");
+                            
+                            var driver = v.Driver;
+                            //Debug.WriteLine($"is he there?? {DoesEntityExist(driver.Handle)}");
+
+                            var pos = GetEntityCoords(driver.Handle, false);
+                            var heading = GetEntityHeading(driver.Handle);
+                            //LoadModel((uint)GetHashKey("adder"));
+
+                            
+                            /*if(DoesEntityExist(v.Driver.Handle)){
+                                                            v.Driver.Delete();
+                                                        }*/
+                            
+                            v.Driver.Delete();
+                            v.Delete();
+                            
+                            //Debug.WriteLine($"is he still there?? {DoesEntityExist(driver.Handle)}");
+
+                            //pos = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 0, 8f, 0.1f) + new Vector3(0f, 0f, 1f);
+                            //heading = GetEntityHeading(Game.PlayerPed.Handle);
+                            //Debug.WriteLine($"Loaded:(?? {HasModelLoaded((uint)0xE644E480)}");
+                            var vehicle = new Vehicle(CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, heading, true, false))
+                            {
+                                NeedsToBeHotwired = false,
+                                //PreviouslyOwnedByPlayer = false,
+                                //IsPersistent = false,
+                                //IsStolen = false,
+                                //IsWanted = false,
+                                IsEngineRunning = true
+                            };
+                        
+
+
+                            //Debug.WriteLine($"is car there?? {DoesEntityExist(vehicle.Handle)}");
+                            vehicle.PlaceOnGround();
+                            
+                            if(DoesEntityExist(vehicle.Driver.Handle)){
+                                                            vehicle.Driver.Delete();
+                                                        }
+
+                            // Create a new NPC ped
+                            //Ped npcPed = new Ped(Function.Call<int>(Hash.CREATE_PED, PedHash.Michael, vehicle.Position.X, vehicle.Position.Y, vehicle.Position.Z, 0, true, true)); // Adjust PedHash.Michael to the desired NPC ped hash
+                            
+                            /*Debug.WriteLine($"is he there?? {DoesEntityExist(vehicle.Driver.Handle)}");
+                            if(vehicle.IsSeatFree(VehicleSeat.Driver)){
+                                vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
+                            }
+                            else{
+                                vehicle.Driver.Delete();
+                                vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
+                            }
+                            
+                            Ped driverPedGuy = vehicle.Driver;
+                            Debug.WriteLine($"is he still there?? {vehicle.GetPedOnSeat(VehicleSeat.Driver)}");*/
+                            //Debug.WriteLine($"FREE??? ?? {vehicle.IsSeatFree(VehicleSeat.Driver)}");
+                            
+                            
+                            
+                            //vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
+                            //Ped driverPedGuy = vehicle.Driver;
+                            
+                            if(vehicle.IsSeatFree(VehicleSeat.Driver)){
+                                 RequestModel((uint)0x62018559);
+                                //Ped driverPedGuy = 
+                                //Debug.WriteLine($"Loaded:(?? {HasModelLoaded((uint)0x62018559)}");
+                                vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.AirworkerSMY));
+                                //Debug.WriteLine($"wat tf?? {CanCreateRandomDriver()}");
+                                //Debug.WriteLine($"is he there :(?? {DoesEntityExist(vehicle.Driver.Handle)}");
+                            }
+                           
+                            Ped driverPedGuy = vehicle.Driver;
+                            ClearPedTasks(driverPedGuy.Handle);
+
+                            //var veh = driver.CurrentVehicle;
+                            var model = (uint)vehicle.Model.Hash;
+
+                            SetDriverAbility(driverPedGuy.Handle, 1f);
+                            SetDriverAggressiveness(driverPedGuy.Handle, 0f);
+
+                            TaskVehicleDriveWander(driverPedGuy.Handle, vehicle.Handle, GetVehicleModelMaxSpeed(model), 443);
+
+
+                            // Make the NPC ped enter the vehicle as the driver
+                            //npcPed.SetIntoVehicle(vehicle, VehicleSeat.Driver);
+
+                            /*ClearPedTasks(driverPedGuy.Handle);
+
+                            //var veh = driver.CurrentVehicle;
+                            var model = (uint)vehicle.Model.Hash;
+
+                            SetDriverAbility(driverPedGuy.Handle, 1f);
+                            SetDriverAggressiveness(driverPedGuy.Handle, 0f);
+
+                            TaskVehicleDriveWander(driverPedGuy.Handle, vehicle.Handle, GetVehicleModelMaxSpeed(model), 443);*/
+                            
+                            
+                            
+                            //currentVehicle = vehicle.Handle;
+
+
+                            
+                            Vector3 currentVelocity = item.Value;
+                            FreezeEntityPosition(vehicle.Handle, false);
+                            float currentSpeed = currentVelocity.Length();
+                            
+                            if(currentVelocity.Length()<targetSpeed){
+                                float modifier = 1+(targetSpeed-currentVelocity.Length())/(targetSpeed*2); //*2
+                                SetEntityVelocity(vehicle.Handle,currentVelocity.X*modifier,currentVelocity.Y*modifier,currentVelocity.Z); //1.35f
+                            }else{
+                                SetEntityVelocity(vehicle.Handle,currentVelocity.X,currentVelocity.Y,currentVelocity.Z);
+                            }
+
+
                         }else{
-                            SetEntityVelocity(currentVehicle,currentVelocity.X,currentVelocity.Y,currentVelocity.Z);
+                            Vector3 currentVelocity = item.Value;
+                            FreezeEntityPosition(currentVehicle, false);
+                            float currentSpeed = currentVelocity.Length();
+                            
+                            if(currentVelocity.Length()<targetSpeed){
+                                float modifier = 1+(targetSpeed-currentVelocity.Length())/(targetSpeed*2); //*2
+                                SetEntityVelocity(currentVehicle,currentVelocity.X*modifier,currentVelocity.Y*modifier,currentVelocity.Z); //1.35f
+                            }else{
+                                SetEntityVelocity(currentVehicle,currentVelocity.X,currentVelocity.Y,currentVelocity.Z);
+                            }
                         }
+                        
+                        
+
+                        
                         
                 }
                 vehiclesFrozen=false;
             }
+            
         }
 
         public void StopDataCollection(int playerEntity){
@@ -886,8 +1046,32 @@ namespace DatasetGenerator.Client
                 float relativeWidth = width / xScreen;
                 float relativeHeight = height / yScreen;
 
+
+
+                Vector3 destination2 = v.Position;
+                bool hit2 = false;
+                var coords2 = Vector3.Zero;
+                var normal2 = Vector3.Zero;
+                int target2 = 0;
+
+                Vector3 cameraCoord2 = GetGameplayCamCoord();
+                var idk2 = StartExpensiveSynchronousShapeTestLosProbe(cameraCoord2.X, cameraCoord2.Y, cameraCoord2.Z, destination2.X, destination2.Y, destination2.Z, -1, PlayerPedId(), 0);
+
                 
-                if ((minX >= 0 && minY >= 0 && maxX < xScreen && maxY < yScreen) && v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)){ //If the full bounding box is on the screen
+
+                GetShapeTestResult(idk2, ref hit2, ref coords2, ref normal2, ref target2);
+                
+                if(hit2&&target2==v.Handle){
+                    hit2=false;
+                }
+
+                if(debugMode){
+                    SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z, 0);
+                    //DrawTextOnScreen($"{hit2} by {target2} {v.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0); // 
+                    ClearDrawOrigin();
+                }
+
+                if ((minX >= 0 && minY >= 0 && maxX < xScreen && maxY < yScreen) && v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)&&!hit2){ //If the full bounding box is on the screen
                     vehiclesOnScreen = true;
                     if (playerVehicle!=null){
                         if (v.Handle!=playerVehicle.Handle){
@@ -963,25 +1147,10 @@ namespace DatasetGenerator.Client
         int currentTime = 0;
         int currentWeather = 0;
         int targetImageNum;
-        private int[] times = {0,6,12,18};
+        private int[] times = {12,18,0,6};
         string[] weathers = {"CLEAR", "RAIN", "FOGGY"};
 
-        string[] vehicles = {
-            "adder", "cheetah", "entityxf", "zentorno", "t20", //Super
-            "seminole", "rocoto", "gresley", "baller", "baller2", //SUV
-            "burrito", "rumpo", "pony", "speedo", "youga", //vans
-            "rapidgt", "carbonizzare", "banshee", "massacro", "pariah", // sports
-            "asterope", "intruder", "primo", "stanier", "schafter2", //Sedan
-            "dominator", "gauntlet", "vigero", "stalion", "dominator3", //Muscle
-            "kamacho", "rebel2", "sandking2", "mesa3", "rancherxl", //off-road
-            "bati", "sanchez2", "hakuchou", "zombieb", "fcr", //Motorbikes
-            "tribike3", "scorcher", "bmx", "fixter", "cruiser", //Cycles
-            "oracle", "felon", "jackal", "sentinel2", "zion", //coupe
-            "phantom", "benson", "mule", "biff", "stockade", //commercial 
-            "issi3", "brioso", "rhapsody", "panto", "issi2", // compacts
-        
-        
-        };
+       
         private bool shouldContinue = true;
 
         public Location(Vector3 playerCoords, float cameraHeading, Vector3 cameraRotation, float cameraPitch, float targetSpeed, int imageNum=1, bool simple=false){//150
@@ -996,7 +1165,7 @@ namespace DatasetGenerator.Client
                 times = new int[]{12};
                 weathers = new string[]{"CLEAR"};
             }else{
-                targetImageNum = (imageNum)*(weathers.Length)*(times.Length);
+                targetImageNum = targetImageNum;//(imageNum)*(weathers.Length)*(times.Length);
             }
 
 
