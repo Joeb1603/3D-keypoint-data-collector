@@ -372,6 +372,11 @@ namespace DatasetGenerator.Client
                 foreach (Vehicle v in allNearbyCars){
                     int currentVeh = v.Handle;
                     Vector3 currentVel = GetEntityVelocity(currentVeh);
+
+
+                    
+
+
                     if((currentVel==new Vector3(0,0,0) || currentVel.Length()<targetSpeed/4) && !dashcamMode){ //Target speed /6   targetSpeed/4 7.5f currentVeh!=playerVehicle.Handle
                         if(DoesEntityExist(v.Driver.Handle)){
                                                             v.Driver.Delete();
@@ -387,9 +392,82 @@ namespace DatasetGenerator.Client
                             v.IsVisible = true;
                             }
                         }
-                        carVelocityDict.Add(currentVeh, currentVel);
-                        //Debug.WriteLine($"Freezing");
+
                         FreezeEntityPosition(currentVeh, true);
+
+
+
+
+                        bool canDo = true;
+
+                        if (playerVehicle!=null){
+                                if (v.Handle==playerVehicle.Handle){
+                                    canDo = false;
+                                }
+                        }
+
+                         if(v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)&&canDo){
+
+                            int randomIndex = random.Next(0, vehicleNames.Length);
+                            var vehicleHash = (uint)GetHashKey(vehicleNames[randomIndex]);
+
+                            RequestModel(vehicleHash);
+                            while (!HasModelLoaded(vehicleHash)){
+                                await Delay(0);
+                            }
+
+                            var driver = v.Driver;
+
+                            var pos = GetEntityCoords(driver.Handle, false);
+                            var heading = GetEntityHeading(driver.Handle);
+
+                            v.Driver.Delete();
+                            v.Delete();
+
+                            var vehicle = new Vehicle(CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, heading, true, false)){
+                                NeedsToBeHotwired = false,
+                                IsEngineRunning = true
+                            };
+
+                            SetModelAsNoLongerNeeded(vehicleHash);
+
+                            vehicle.PlaceOnGround();
+
+                            if(DoesEntityExist(vehicle.Driver.Handle)){
+                                vehicle.Driver.Delete();
+                            }
+
+                            if(vehicle.IsSeatFree(VehicleSeat.Driver)){
+                                RequestModel((uint)0x62018559);
+                                while (!HasModelLoaded((uint)0x62018559)){
+                                await Delay(0);
+                                }
+                                vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.AirworkerSMY));
+                            }
+
+                            SetModelAsNoLongerNeeded((uint)0x62018559);
+                            
+                            Ped driverPedGuy = vehicle.Driver;
+                            ClearPedTasks(driverPedGuy.Handle);
+
+                            //var veh = driver.CurrentVehicle;
+                            var model = (uint)vehicle.Model.Hash;
+
+                            SetDriverAbility(driverPedGuy.Handle, 1f);
+                            SetDriverAggressiveness(driverPedGuy.Handle, 0f);
+
+                            TaskVehicleDriveWander(driverPedGuy.Handle, vehicle.Handle, GetVehicleModelMaxSpeed(model), 443);
+                            
+                               carVelocityDict.Add(vehicle.Handle, currentVel);
+                        }else{
+                            carVelocityDict.Add(currentVeh, currentVel);
+                        }
+
+
+
+                        //carVelocityDict.Add(currentVeh, currentVel);
+                        //Debug.WriteLine($"Freezing");
+                        
                     }
                     
                  }    
@@ -400,7 +478,7 @@ namespace DatasetGenerator.Client
                         int currentVehicle = item.Key;
                         Vehicle v = new Vehicle(currentVehicle);
                         
-                        bool canDo = true;
+                        /*bool canDo = true;
 
                         if (playerVehicle!=null){
                                 if (v.Handle==playerVehicle.Handle){
@@ -482,9 +560,18 @@ namespace DatasetGenerator.Client
                             }else{
                                 SetEntityVelocity(currentVehicle,currentVelocity.X,currentVelocity.Y,currentVelocity.Z);
                             }
+                        }*/
+                        
+                        Vector3 currentVelocity = item.Value;
+                        FreezeEntityPosition(currentVehicle, false);
+                        float currentSpeed = currentVelocity.Length();
+                        
+                        if(currentVelocity.Length()<targetSpeed){
+                            float modifier = 1+(targetSpeed-currentVelocity.Length())/(targetSpeed*2); //*2
+                            SetEntityVelocity(currentVehicle,currentVelocity.X*modifier,currentVelocity.Y*modifier,currentVelocity.Z); //1.35f
+                        }else{
+                            SetEntityVelocity(currentVehicle,currentVelocity.X,currentVelocity.Y,currentVelocity.Z);
                         }
-                        
-                        
 
                         
                         
