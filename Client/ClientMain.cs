@@ -46,8 +46,8 @@ namespace DatasetGenerator.Client
         Random random = new Random();
 
         
-        //string saveDir = @"F:\Programming\Dissertation-mk2\dataset\";
-        string saveDir = @"D:\Dissertation\dataset\";
+        string saveDir = @"F:\Programming\Dissertation-mk2\dataset\";
+        //string saveDir = @"D:\Dissertation\dataset\";
         
 
         private List<Vehicle> vehicles = new List<Vehicle>();
@@ -91,6 +91,7 @@ namespace DatasetGenerator.Client
         
         
         };
+
         /*private int[] times = {0,6,12,18};
         string[] weathers = {"CLEAR", "RAIN", "FOGGY", "SNOW"};*/
         
@@ -431,6 +432,8 @@ namespace DatasetGenerator.Client
                                 IsEngineRunning = true
                             };
 
+                            SetModelAsNoLongerNeeded(vehicleHash);
+
                             vehicle.PlaceOnGround();
 
                             if(DoesEntityExist(vehicle.Driver.Handle)){
@@ -439,9 +442,14 @@ namespace DatasetGenerator.Client
 
                             if(vehicle.IsSeatFree(VehicleSeat.Driver)){
                                 RequestModel((uint)0x62018559);
+                                while (!HasModelLoaded((uint)0x62018559)){
+                                await Delay(0);
+                                }
                                 vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.AirworkerSMY));
                             }
 
+                            SetModelAsNoLongerNeeded((uint)0x62018559);
+                            
                             Ped driverPedGuy = vehicle.Driver;
                             ClearPedTasks(driverPedGuy.Handle);
 
