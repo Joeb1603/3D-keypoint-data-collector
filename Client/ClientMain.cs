@@ -47,7 +47,7 @@ namespace DatasetGenerator.Client
 
         
         //string saveDir = @"F:\Programming\Dissertation-mk2\dataset\";
-        string saveDir = @"F:\Programming\Dissertation-mk2\dataset\";
+        string saveDir = @"D:\Dissertation\dataset\";
         
 
         private List<Vehicle> vehicles = new List<Vehicle>();
@@ -399,89 +399,49 @@ namespace DatasetGenerator.Client
                         int currentVehicle = item.Key;
                         Vehicle v = new Vehicle(currentVehicle);
                         
-                        if(v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)){
-                            
+                        bool canDo = true;
 
-                            
+                        if (playerVehicle!=null){
+                                if (v.Handle==playerVehicle.Handle){
+                                    canDo = false;
+                                }
+                        }
+
+
+                        if(v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)&&canDo){
+
                             int randomIndex = random.Next(0, vehicleNames.Length);
                             var vehicleHash = (uint)GetHashKey(vehicleNames[randomIndex]);
 
                             RequestModel(vehicleHash);
-                            while (!HasModelLoaded(vehicleHash))
-                            {
+                            while (!HasModelLoaded(vehicleHash)){
                                 await Delay(0);
                             }
-                            //Debug.WriteLine($"hmm");
-                            
+
                             var driver = v.Driver;
-                            //Debug.WriteLine($"is he there?? {DoesEntityExist(driver.Handle)}");
 
                             var pos = GetEntityCoords(driver.Handle, false);
                             var heading = GetEntityHeading(driver.Handle);
-                            //LoadModel((uint)GetHashKey("adder"));
 
-                            
-                            /*if(DoesEntityExist(v.Driver.Handle)){
-                                                            v.Driver.Delete();
-                                                        }*/
-                            
                             v.Driver.Delete();
                             v.Delete();
-                            
-                            //Debug.WriteLine($"is he still there?? {DoesEntityExist(driver.Handle)}");
 
-                            //pos = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 0, 8f, 0.1f) + new Vector3(0f, 0f, 1f);
-                            //heading = GetEntityHeading(Game.PlayerPed.Handle);
-                            //Debug.WriteLine($"Loaded:(?? {HasModelLoaded((uint)0xE644E480)}");
-                            var vehicle = new Vehicle(CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, heading, true, false))
-                            {
+                            var vehicle = new Vehicle(CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, heading, true, false)){
                                 NeedsToBeHotwired = false,
-                                //PreviouslyOwnedByPlayer = false,
-                                //IsPersistent = false,
-                                //IsStolen = false,
-                                //IsWanted = false,
                                 IsEngineRunning = true
                             };
-                        
 
-
-                            //Debug.WriteLine($"is car there?? {DoesEntityExist(vehicle.Handle)}");
                             vehicle.PlaceOnGround();
-                            
-                            if(DoesEntityExist(vehicle.Driver.Handle)){
-                                                            vehicle.Driver.Delete();
-                                                        }
 
-                            // Create a new NPC ped
-                            //Ped npcPed = new Ped(Function.Call<int>(Hash.CREATE_PED, PedHash.Michael, vehicle.Position.X, vehicle.Position.Y, vehicle.Position.Z, 0, true, true)); // Adjust PedHash.Michael to the desired NPC ped hash
-                            
-                            /*Debug.WriteLine($"is he there?? {DoesEntityExist(vehicle.Driver.Handle)}");
-                            if(vehicle.IsSeatFree(VehicleSeat.Driver)){
-                                vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
-                            }
-                            else{
+                            if(DoesEntityExist(vehicle.Driver.Handle)){
                                 vehicle.Driver.Delete();
-                                vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
                             }
-                            
-                            Ped driverPedGuy = vehicle.Driver;
-                            Debug.WriteLine($"is he still there?? {vehicle.GetPedOnSeat(VehicleSeat.Driver)}");*/
-                            //Debug.WriteLine($"FREE??? ?? {vehicle.IsSeatFree(VehicleSeat.Driver)}");
-                            
-                            
-                            
-                            //vehicle.CreateRandomPedOnSeat(VehicleSeat.Driver);
-                            //Ped driverPedGuy = vehicle.Driver;
-                            
+
                             if(vehicle.IsSeatFree(VehicleSeat.Driver)){
-                                 RequestModel((uint)0x62018559);
-                                //Ped driverPedGuy = 
-                                //Debug.WriteLine($"Loaded:(?? {HasModelLoaded((uint)0x62018559)}");
+                                RequestModel((uint)0x62018559);
                                 vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.AirworkerSMY));
-                                //Debug.WriteLine($"wat tf?? {CanCreateRandomDriver()}");
-                                //Debug.WriteLine($"is he there :(?? {DoesEntityExist(vehicle.Driver.Handle)}");
                             }
-                           
+
                             Ped driverPedGuy = vehicle.Driver;
                             ClearPedTasks(driverPedGuy.Handle);
 
@@ -492,39 +452,17 @@ namespace DatasetGenerator.Client
                             SetDriverAggressiveness(driverPedGuy.Handle, 0f);
 
                             TaskVehicleDriveWander(driverPedGuy.Handle, vehicle.Handle, GetVehicleModelMaxSpeed(model), 443);
-
-
-                            // Make the NPC ped enter the vehicle as the driver
-                            //npcPed.SetIntoVehicle(vehicle, VehicleSeat.Driver);
-
-                            /*ClearPedTasks(driverPedGuy.Handle);
-
-                            //var veh = driver.CurrentVehicle;
-                            var model = (uint)vehicle.Model.Hash;
-
-                            SetDriverAbility(driverPedGuy.Handle, 1f);
-                            SetDriverAggressiveness(driverPedGuy.Handle, 0f);
-
-                            TaskVehicleDriveWander(driverPedGuy.Handle, vehicle.Handle, GetVehicleModelMaxSpeed(model), 443);*/
-                            
-                            
-                            
-                            //currentVehicle = vehicle.Handle;
-
-
-                            
                             Vector3 currentVelocity = item.Value;
                             FreezeEntityPosition(vehicle.Handle, false);
                             float currentSpeed = currentVelocity.Length();
-                            
+
                             if(currentVelocity.Length()<targetSpeed){
                                 float modifier = 1+(targetSpeed-currentVelocity.Length())/(targetSpeed*2); //*2
                                 SetEntityVelocity(vehicle.Handle,currentVelocity.X*modifier,currentVelocity.Y*modifier,currentVelocity.Z); //1.35f
                             }else{
                                 SetEntityVelocity(vehicle.Handle,currentVelocity.X,currentVelocity.Y,currentVelocity.Z);
                             }
-
-
+                               
                         }else{
                             Vector3 currentVelocity = item.Value;
                             FreezeEntityPosition(currentVehicle, false);
@@ -1082,7 +1020,7 @@ namespace DatasetGenerator.Client
 
                 if(debugMode){
                     SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z, 0);
-                    //DrawTextOnScreen($"{hit2} by {target2} {v.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0); // 
+                    DrawTextOnScreen($"{hit2} by {target2} {v.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0); // 
                     ClearDrawOrigin();
                 }
 
