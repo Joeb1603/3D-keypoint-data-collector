@@ -579,6 +579,11 @@ namespace DatasetGenerator.Client
                         
                         Vector3 currentVelocity = item.Value;
                         FreezeEntityPosition(currentVehicle, false);
+
+                        var carCoords = GetEntityRotation(currentVehicle, 2);
+                        SetEntityRotation(currentVehicle, carCoords.X, 0, carCoords.Z, 2, true);
+
+                        v.PlaceOnGround();
                         float currentSpeed = currentVelocity.Length();
                         
                         if(currentVelocity.Length()<targetSpeed){
