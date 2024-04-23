@@ -75,22 +75,44 @@ namespace DatasetGenerator.Client
 
         private bool generateTestDataset=true;
 
+        List<Vehicle> previousVehicles = new List<Vehicle>();
+
          string[] vehicleNames = {
-            "adder", "cheetah", "entityxf", "zentorno", "t20", //Super
-            "seminole", "rocoto", "gresley", "baller", "baller2", //SUV
-            "burrito", "rumpo", "pony", "speedo", "youga", //vans
-            "rapidgt", "carbonizzare", "banshee", "massacro", "pariah", // sports
-            "asterope", "intruder", "primo", "stanier", "schafter2", //Sedan
-            "dominator", "gauntlet", "vigero", "stalion", "dominator3", //Muscle
-            "kamacho", "rebel2", "sandking2", "mesa3", "rancherxl", //off-road
-            "bati", "sanchez2", "hakuchou", "zombieb", "fcr", //Motorbikes
-            "tribike3", "scorcher", "bmx", "fixter", "cruiser", //Cycles
-            "oracle", "felon", "jackal", "sentinel2", "zion", //coupe
-            "phantom", "benson", "mule", "biff", "stockade", //commercial 
-            "issi3", "brioso", "rhapsody", "panto", "issi2", // compacts
+            
+
+             //SUV
+             //vans
+             // sports
+             //Sedan
+             //Muscle
+             //off-road
+             //Motorbikes
+             //Cycles
+            //coupe
+             //commercial 
+             // compacts
         
         
         };
+
+        static string[] superNames = {"adder", "cheetah", "entityxf", "zentorno", "t20","turismo3","virtue","entity3", "zeno","furia", "zorrusso", "tyrant","thrax", "entity2", "autarch", "taipan", "xa21", "visione", "nero", "italigtb", "tempesta", "tyrus", "le7b", "pfister811","reaper", "osiris", "turismor"  };
+        static string[] suvNames = {"seminole", "rocoto", "gresley", "baller", "baller2","baller8", "dorado","aleutian","vivanite","iwagen","baller7","astron","rebla", "novak", "toros", "xls",  "baller4", "huntley", "dubsta2","serrano", "seminole", "rocoto", "radi","patriot","mesa", "landstalker", "gresley", "fq2","dubsta","cavalcade", "bjxl"  };
+        static string[] vanNames = {"burrito", "rumpo", "pony", "speedo", "youga","speedo4", "youga2"};
+        static string[] sportsNames = {"rapidgt", "carbonizzare", "banshee", "massacro", "pariah", "panthere", "growler", "vectre", "rt3000", "zr350", "euros", "calico", "jester3", "elegy", "massacro","surano", "penumbra", "elegy2", "coquette", "feltzer2", "ninef"  };
+        static string[] sedanNames = {"impaler5", "previon", "primo2", "washington", "stanier","primo", "intruder"};//"asterope2" "schafter2",     "rhinehart", "stratum", "ingot",
+        //static string[] sedanNames = {"asterope", "intruder", "primo", "stanier", "schafter2",};
+        //static string[] muscleNames = {"dominator", "gauntlet", "vigero", "stalion", "dominator3",};
+        static string[] muscleNames = {"dominator9","buffalo5", "vigero2", "buffalo4", "gauntlet4", "dominator", "tampa", "stalion","dukes", "vigero", "sabregt", "gauntlet", "buccaneer",  "gauntlet3" };
+        static string[] offroadNames = {"kamacho", "rebel2", "sandking2","technical", "bodhi2", "l35", "yosemite3", "everon","caracara2",  };
+        static string[] motorbikeNames = {"shinobi","powersurge", "reever", "fcr", "esskey","vortex", "zombieb", "faggio3","faggio", "faggio2", "wolfsbane", "manchez", "nightblade", "avarus", "cliffhanger", "lectro", "vindicator", "hakuchou", "innovation", "enduro", "thrust", "sanchez2", "vader", "ruffian", "pcj", "nemesis", "double", "carbonrs", "bati", "bagger", "akuma" };
+        //static string[] motorbikeNames = {"bati", "sanchez2", "hakuchou", "zombieb", "fcr",};
+        static string[] cycleNames = {"tribike3", "scorcher", "bmx", "fixter", "cruiser","tribike","tribike2" };
+        static string[] coupeNames = {"jackal","exemplar", "cogcabrio", "windsor"};
+
+        static string[] commercialNames = {"phantom", "benson", "mule", "biff", "stockade", "rentalbus","trash","bus", "pounder", "coach"  };
+        static string[] compactNames = {"issi3", "brioso", "rhapsody", "panto", "issi2","club", "brioso2", "asbo", "rhapsody", "kanjo", "issi2","blista", "dilettante"};
+
+        static string[][] vehicleClasses = {superNames, suvNames, vanNames, sportsNames, sedanNames, muscleNames, offroadNames, motorbikeNames, cycleNames, coupeNames, commercialNames, compactNames };
 
         /*private int[] times = {0,6,12,18};
         string[] weathers = {"CLEAR", "RAIN", "FOGGY", "SNOW"};*/
@@ -300,8 +322,8 @@ namespace DatasetGenerator.Client
             
             Debug.WriteLine($" DatasetGenerator.Client activated at [{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]");
 
-            bool testMode = false;
-            picsPerCondition =50;
+            bool testMode = true;
+            picsPerCondition =10;
             locations = new Location[]{
                 //new Location(new Vector3(-106.6908f, -519.0898f, 39.84289f), 0f, new Vector3(0f, 0f, -8.321015f), -30.22839f, 10f, picsFromLocation, true),
 
@@ -361,7 +383,7 @@ namespace DatasetGenerator.Client
         private async void FreezeVehicles(bool freezeMode){
 
             Vehicle[] allNearbyCars = World.GetAllVehicles();
-            
+            Vector3 tempVel;
 
             if(freezeMode){
                 vehiclesFrozen=true;
@@ -369,19 +391,38 @@ namespace DatasetGenerator.Client
                 vehicleVelocities = new List<Vector3>{};
                 carVelocityDict = new Dictionary<int, Vector3>();
 
+                
+
+                List<Vector3> vecs = new List<Vector3>();
+                
+
+                 foreach (Vehicle v in allNearbyCars){
+                    tempVel = GetEntityVelocity(v.Handle);
+                     vecs.Add(tempVel);
+                     FreezeEntityPosition(v.Handle, true);
+                 }
+
+                int counter=0;
+                //Vehicles = new List<Vehicle>();
                 foreach (Vehicle v in allNearbyCars){
                     int currentVeh = v.Handle;
-                    Vector3 currentVel = GetEntityVelocity(currentVeh);
+                    
 
 
                     
-
+                    Vector3 currentVel = vecs[counter];//GetEntityVelocity(currentVeh);
 
                     if((currentVel==new Vector3(0,0,0) || currentVel.Length()<targetSpeed/4) && !dashcamMode){ //Target speed /6   targetSpeed/4 7.5f currentVeh!=playerVehicle.Handle
                         if(DoesEntityExist(v.Driver.Handle)){
                                                             v.Driver.Delete();
                                                         }
-                        DeleteEntity(ref currentVeh);
+                                                        
+                        SetVehicleHasBeenOwnedByPlayer(v.Handle, false);
+                        SetEntityAsMissionEntity(v.Handle, true, true);
+                        //DeleteEntity(ref currentVeh);
+                        //DeleteVehicle(ref currentVeh);
+                        v.Delete();
+                        //Debug.WriteLine($"Vehicle deleted from being stationary");
                        
                         
                         //v.IsVisible = false;
@@ -393,72 +434,121 @@ namespace DatasetGenerator.Client
                             }
                         }
 
-                        FreezeEntityPosition(currentVeh, true);
-
-
-
+                        //FreezeEntityPosition(currentVeh, true);
 
                         bool canDo = true;
-
                         if (playerVehicle!=null){
-                                if (v.Handle==playerVehicle.Handle){
-                                    canDo = false;
-                                }
+                                    if (v.Handle==playerVehicle.Handle){
+                                        canDo = false;
+                                    }
+                            }
+
+
+                        
+
+                        bool changeModels = true;
+
+                        /*if (vehicleNames.Any(s => s == v.Model)){
+                            changeModels = false;
+                        }*/
+                        
+                        if (changeModels){
+
+                             Vector3 destination2 = v.Position;
+                        bool hit2 = false;
+                        var coords2 = Vector3.Zero;
+                        var normal2 = Vector3.Zero;
+                        int target2 = 0;
+
+                        Vector3 cameraCoord2 = GetGameplayCamCoord();
+                        var idk2 = StartExpensiveSynchronousShapeTestLosProbe(cameraCoord2.X, cameraCoord2.Y, cameraCoord2.Z, destination2.X, destination2.Y, destination2.Z, -1, PlayerPedId(), 0);
+
+                
+
+                        GetShapeTestResult(idk2, ref hit2, ref coords2, ref normal2, ref target2);
+                
+                        if(hit2&&target2==v.Handle){
+                            hit2=false;
                         }
 
-                         if(v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)&&canDo){
+                            if(v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)&&canDo&&!hit2&&v.IsOnScreen){
 
-                            int randomIndex = random.Next(0, vehicleNames.Length);
-                            var vehicleHash = (uint)GetHashKey(vehicleNames[randomIndex]);
+                                //int randomIndex = random.Next(0, vehicleNames.Length);
+                                
+                                int randomIndex = random.Next(0, vehicleClasses.Length);
+                                string[] randomClass = vehicleClasses[randomIndex];
+                                randomIndex = random.Next(0, randomClass.Length);
 
-                            RequestModel(vehicleHash);
-                            while (!HasModelLoaded(vehicleHash)){
-                                await Delay(0);
-                            }
+                                var vehicleHash = (uint)GetHashKey(randomClass[randomIndex]);
 
-                            var driver = v.Driver;
-
-                            var pos = GetEntityCoords(driver.Handle, false);
-                            var heading = GetEntityHeading(driver.Handle);
-
-                            v.Driver.Delete();
-                            v.Delete();
-
-                            var vehicle = new Vehicle(CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, heading, true, false)){
-                                NeedsToBeHotwired = false,
-                                IsEngineRunning = true
-                            };
-
-                            SetModelAsNoLongerNeeded(vehicleHash);
-
-                            vehicle.PlaceOnGround();
-
-                            if(DoesEntityExist(vehicle.Driver.Handle)){
-                                vehicle.Driver.Delete();
-                            }
-
-                            if(vehicle.IsSeatFree(VehicleSeat.Driver)){
-                                RequestModel((uint)0x62018559);
-                                while (!HasModelLoaded((uint)0x62018559)){
-                                await Delay(0);
+                                RequestModel(vehicleHash);
+                                while (!HasModelLoaded(vehicleHash)){
+                                    await Delay(0);
                                 }
-                                vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.AirworkerSMY));
+
+                                var driver = v.Driver;
+
+                                var pos = GetEntityCoords(driver.Handle, false);
+                                var heading = GetEntityHeading(driver.Handle);
+
+                                v.Driver.Delete();
+
+
+                                SetVehicleHasBeenOwnedByPlayer(v.Handle, false);
+                                SetEntityAsMissionEntity(v.Handle, true, true);
+                                v.Delete();
+                                //Debug.WriteLine($"Vehicle deleted to be replaced");
+
+                                var vehicle = new Vehicle(CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, heading, false, false)){
+                                    NeedsToBeHotwired = false,
+                                    IsEngineRunning = false
+                                };
+
+                                SetModelAsNoLongerNeeded(vehicleHash);
+                                
+                                previousVehicles.Add(vehicle);
+                                if (previousVehicles.Count >= 500)
+                                {
+                                    // Remove the first item that went in
+                                    previousVehicles.RemoveAt(0);
+                                }
+                                
+                                //SetEntityAsNoLongerNeeded(ref vehicle);
+                                vehicle.PlaceOnGround();
+
+                                FreezeEntityPosition(vehicle.Handle, true);
+                                vehicle.IsEngineRunning = true;
+
+                                if(DoesEntityExist(vehicle.Driver.Handle)){
+                                    vehicle.Driver.Delete();
+                                }
+
+                                if(vehicle.IsSeatFree(VehicleSeat.Driver)){
+                                    RequestModel((uint)0x62018559);
+                                    while (!HasModelLoaded((uint)0x62018559)){
+                                    await Delay(0);
+                                    }
+                                    vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.AirworkerSMY));
+                                }
+
+                                SetModelAsNoLongerNeeded((uint)0x62018559);
+                                
+                                
+                                Ped driverPedGuy = vehicle.Driver;
+                                ClearPedTasks(driverPedGuy.Handle);
+
+                                //var veh = driver.CurrentVehicle;
+                                var model = (uint)vehicle.Model.Hash;
+
+                                SetDriverAbility(driverPedGuy.Handle, 1f);
+                                SetDriverAggressiveness(driverPedGuy.Handle, 0f);
+
+                                TaskVehicleDriveWander(driverPedGuy.Handle, vehicle.Handle, GetVehicleModelMaxSpeed(model), 443);
+                                
+                                carVelocityDict.Add(vehicle.Handle, currentVel);
+                            }else{
+                                carVelocityDict.Add(currentVeh, currentVel);
                             }
-
-                            SetModelAsNoLongerNeeded((uint)0x62018559);
-                            
-                            Ped driverPedGuy = vehicle.Driver;
-                            ClearPedTasks(driverPedGuy.Handle);
-
-                            //var veh = driver.CurrentVehicle;
-                            var model = (uint)vehicle.Model.Hash;
-
-                            SetDriverAbility(driverPedGuy.Handle, 1f);
-                            SetDriverAggressiveness(driverPedGuy.Handle, 0f);
-
-                            TaskVehicleDriveWander(driverPedGuy.Handle, vehicle.Handle, GetVehicleModelMaxSpeed(model), 443);
-                            
-                               carVelocityDict.Add(vehicle.Handle, currentVel);
                         }else{
                             carVelocityDict.Add(currentVeh, currentVel);
                         }
@@ -469,98 +559,23 @@ namespace DatasetGenerator.Client
                         //Debug.WriteLine($"Freezing");
                         
                     }
-                    
-                 }    
+
+                   counter++; 
+                 }
+                     
             }else{
                 //Debug.WriteLine($"hello there");
                 foreach(KeyValuePair<int, Vector3> item in carVelocityDict){
                         
                         int currentVehicle = item.Key;
                         Vehicle v = new Vehicle(currentVehicle);
-                        
-                        /*bool canDo = true;
 
-                        if (playerVehicle!=null){
-                                if (v.Handle==playerVehicle.Handle){
-                                    canDo = false;
-                                }
+                         if (playerVehicle!=null){
+                            if (v.Handle!=playerVehicle.Handle){
+                            v.IsVisible = true;
+                            }
                         }
-
-
-                        if(v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)&&canDo){
-
-                            int randomIndex = random.Next(0, vehicleNames.Length);
-                            var vehicleHash = (uint)GetHashKey(vehicleNames[randomIndex]);
-
-                            RequestModel(vehicleHash);
-                            while (!HasModelLoaded(vehicleHash)){
-                                await Delay(0);
-                            }
-
-                            var driver = v.Driver;
-
-                            var pos = GetEntityCoords(driver.Handle, false);
-                            var heading = GetEntityHeading(driver.Handle);
-
-                            v.Driver.Delete();
-                            v.Delete();
-
-                            var vehicle = new Vehicle(CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, heading, true, false)){
-                                NeedsToBeHotwired = false,
-                                IsEngineRunning = true
-                            };
-
-                            SetModelAsNoLongerNeeded(vehicleHash);
-
-                            vehicle.PlaceOnGround();
-
-                            if(DoesEntityExist(vehicle.Driver.Handle)){
-                                vehicle.Driver.Delete();
-                            }
-
-                            if(vehicle.IsSeatFree(VehicleSeat.Driver)){
-                                RequestModel((uint)0x62018559);
-                                while (!HasModelLoaded((uint)0x62018559)){
-                                await Delay(0);
-                                }
-                                vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.AirworkerSMY));
-                            }
-
-                            SetModelAsNoLongerNeeded((uint)0x62018559);
-                            
-                            Ped driverPedGuy = vehicle.Driver;
-                            ClearPedTasks(driverPedGuy.Handle);
-
-                            //var veh = driver.CurrentVehicle;
-                            var model = (uint)vehicle.Model.Hash;
-
-                            SetDriverAbility(driverPedGuy.Handle, 1f);
-                            SetDriverAggressiveness(driverPedGuy.Handle, 0f);
-
-                            TaskVehicleDriveWander(driverPedGuy.Handle, vehicle.Handle, GetVehicleModelMaxSpeed(model), 443);
-                            Vector3 currentVelocity = item.Value;
-                            FreezeEntityPosition(vehicle.Handle, false);
-                            float currentSpeed = currentVelocity.Length();
-
-                            if(currentVelocity.Length()<targetSpeed){
-                                float modifier = 1+(targetSpeed-currentVelocity.Length())/(targetSpeed*2); //*2
-                                SetEntityVelocity(vehicle.Handle,currentVelocity.X*modifier,currentVelocity.Y*modifier,currentVelocity.Z); //1.35f
-                            }else{
-                                SetEntityVelocity(vehicle.Handle,currentVelocity.X,currentVelocity.Y,currentVelocity.Z);
-                            }
-                               
-                        }else{
-                            Vector3 currentVelocity = item.Value;
-                            FreezeEntityPosition(currentVehicle, false);
-                            float currentSpeed = currentVelocity.Length();
-                            
-                            if(currentVelocity.Length()<targetSpeed){
-                                float modifier = 1+(targetSpeed-currentVelocity.Length())/(targetSpeed*2); //*2
-                                SetEntityVelocity(currentVehicle,currentVelocity.X*modifier,currentVelocity.Y*modifier,currentVelocity.Z); //1.35f
-                            }else{
-                                SetEntityVelocity(currentVehicle,currentVelocity.X,currentVelocity.Y,currentVelocity.Z);
-                            }
-                        }*/
+                        
                         
                         Vector3 currentVelocity = item.Value;
                         FreezeEntityPosition(currentVehicle, false);
@@ -574,7 +589,7 @@ namespace DatasetGenerator.Client
                         }
 
                         
-                        
+               
                 }
                 vehiclesFrozen=false;
             }
@@ -597,10 +612,113 @@ namespace DatasetGenerator.Client
             SetEntityCoords(playerEntity, -1257.721f, -1479.454f, 3.257412f, false, false, false, true);
         }
 
+        public async void SetupDashcamMode(){
+            Debug.WriteLine($"helo");
+
+
+            int thingCounter = 0;
+            foreach (var classArray in vehicleClasses)
+            {
+            foreach (var name in classArray)
+            {   
+                uint hash = (uint)GetHashKey(name);
+                bool isValid = IsModelAVehicle(hash);
+                if(!isValid){
+                    thingCounter++;
+                }
+                 Debug.WriteLine($"{name}: {(isValid ? "Valid" : "Invalid")}");
+            }
+            }
+             Debug.WriteLine($"{thingCounter} invalid vehs");
+
+
+
+
+            Ped playerPed = Game.PlayerPed;
+                        Vector3 playerPos = playerPed.Position;
+                        float closestDistance = -1f;
+                        Vehicle closestVehicle = null;
+
+                        if (!playerPed.IsInVehicle()){
+                            foreach (Vehicle vehicle in World.GetAllVehicles()){
+                                float distance = Vector3.Distance(playerPos, vehicle.Position);
+
+                                if ((closestDistance == -1f || distance < closestDistance) && vehicle.Driver.Exists())
+                                {
+                                    closestDistance = distance;
+                                    closestVehicle = vehicle;
+                                }
+                            }   
+
+                            if (closestVehicle != null){
+                                
+                                Debug.WriteLine($"Closest vehicle: {closestVehicle.Handle}, Distance: {closestDistance} IDK");
+
+                                
+
+
+                                var vehicleHash = (uint)GetHashKey("baller");
+
+                                RequestModel(vehicleHash);
+                                while (!HasModelLoaded(vehicleHash)){
+                                    await Delay(0);
+                                }
+
+                                var driver = closestVehicle.Driver;
+
+                                var pos = GetEntityCoords(driver.Handle, false);
+                                var heading = GetEntityHeading(driver.Handle);
+
+                                closestVehicle.Driver.Delete();
+                                closestVehicle.Delete();
+                                 //Debug.WriteLine($"Vehicle deleted to drive");
+
+                                var vehicle = new Vehicle(CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, heading, true, false)){
+                                    NeedsToBeHotwired = false,
+                                    IsEngineRunning = true
+                                };
+
+                                SetModelAsNoLongerNeeded(vehicleHash);
+
+                                vehicle.PlaceOnGround();
+
+
+
+
+                                new Ped(Game.PlayerPed.Handle).SetIntoVehicle(vehicle, VehicleSeat.Driver);
+                                playerVehicle = vehicle;
+                                SetFollowPedCamViewMode(4);
+
+                                ClearPedTasks(Game.PlayerPed.Handle);
+
+                                var veh = Game.PlayerPed.CurrentVehicle;
+                                //Debug.WriteLine($"vehicle: {veh}, playa: {Game.PlayerPed.Handle} IDK");
+                                var model = (uint)veh.Model.Hash;
+
+                                SetDriverAbility(Game.PlayerPed.Handle, 1f);
+                                SetDriverAggressiveness(Game.PlayerPed.Handle, 0f);
+
+                                TaskVehicleDriveWander(Game.PlayerPed.Handle, veh.Handle, GetVehicleModelMaxSpeed(model), 443);
+                                ticksBetweenPics = ticksBetweenPicsDashcam;
+                                playerVehicle.IsVisible = false;
+                                SetEntityInvincible(playerVehicle.Handle, true);
+                                SetEntityVisible(Game.PlayerPed.Handle, false, false);
+                                targetSpeed = 1f;
+                                tickCounter=0;
+                                canStart = false;
+                                dashcamMode = true;
+                                
+                            }
+                        }
+        }
+
         public Task OnTick()
         {   
             //Updates the metadata without updating coordinate variables (for the onscreen bounding boxes)
             UpdateMetadata(false);
+
+            SetVehicleDensityMultiplierThisFrame(1);
+            SetRandomVehicleDensityMultiplierThisFrame(1);
 
             int playerEntity = Game.PlayerPed.Handle; // set this as a global variable is probably a good idea
             
@@ -666,57 +784,11 @@ namespace DatasetGenerator.Client
             #region Change dashcam mode if key is pressed numpad 8
 
             if (Game.IsControlJustPressed(0, (Control)dashcamCollectKey)){
-                    Debug.WriteLine($"helo");
+                    
                     if(!dashcamMode){ // If it is being changed to collect mode
 
+                        SetupDashcamMode();
                         
-                        Ped playerPed = Game.PlayerPed;
-                        Vector3 playerPos = playerPed.Position;
-                        float closestDistance = -1f;
-                        Vehicle closestVehicle = null;
-
-                        if (!playerPed.IsInVehicle()){
-                            foreach (Vehicle vehicle in World.GetAllVehicles()){
-                                float distance = Vector3.Distance(playerPos, vehicle.Position);
-
-                                if ((closestDistance == -1f || distance < closestDistance) && vehicle.Driver.Exists())
-                                {
-                                    closestDistance = distance;
-                                    closestVehicle = vehicle;
-                                }
-                            }   
-
-                            if (closestVehicle != null){
-                                if (closestVehicle.Driver.Exists()){
-                                    Debug.WriteLine($" Driver: {closestVehicle.Driver}");
-                                    closestVehicle.Driver.Delete();
-                                }
-                                Debug.WriteLine($"Closest vehicle: {closestVehicle.Handle}, Distance: {closestDistance} IDK");
-                                
-                                new Ped(Game.PlayerPed.Handle).SetIntoVehicle(closestVehicle, VehicleSeat.Driver);
-                                playerVehicle = closestVehicle;
-                                SetFollowPedCamViewMode(4);
-
-                                ClearPedTasks(Game.PlayerPed.Handle);
-
-                                var veh = Game.PlayerPed.CurrentVehicle;
-                                var model = (uint)veh.Model.Hash;
-
-                                SetDriverAbility(Game.PlayerPed.Handle, 1f);
-                                SetDriverAggressiveness(Game.PlayerPed.Handle, 0f);
-
-                                TaskVehicleDriveWander(Game.PlayerPed.Handle, veh.Handle, GetVehicleModelMaxSpeed(model), 443);
-                                ticksBetweenPics = ticksBetweenPicsDashcam;
-                                playerVehicle.IsVisible = false;
-                                SetEntityInvincible(playerVehicle.Handle, true);
-                                SetEntityVisible(Game.PlayerPed.Handle, false, false);
-                                targetSpeed = 1f;
-                                tickCounter=0;
-                                canStart = false;
-                                dashcamMode = true;
-                                
-                            }
-                        }
                     
                     }else{
                         dashcamMode = false;
@@ -794,7 +866,7 @@ namespace DatasetGenerator.Client
 
             if(canEnd){
                 if(!canStart){ // if not ready to start
-                    if (tickCounter<10){ //1500 
+                    if (tickCounter<30){ //1500 
                         tickCounter+=1;
                             //SetGameplayCamRelativePitch(0f, 1f);
                             //SetGameplayCamRelativeHeading(0f);
@@ -946,218 +1018,260 @@ namespace DatasetGenerator.Client
         }
         private void UpdateMetadata(bool save){
 
+
+
             playerPos = Game.PlayerPed.Position;
             //vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), e.Handle, 17)).ToList(); 
             //vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), e.Handle, 17)).ToList(); 
-            vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen ).ToList(); 
+
             
 
+            vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen ).ToList(); 
+
+            var allVehicles = World.GetAllVehicles().ToList(); 
+            
             vehiclesOnScreen = false;
 
-            //if(vehicles.Count>0){
-            //    vehiclesOnScreen = true;
-            //}else{
-           //     vehiclesOnScreen = false;
-            //}
-
-            List<Vehicle> every_vehicle = new List<Vehicle>();
-            every_vehicle = (World.GetAllVehicles()).ToList(); 
-            int vehicleCount = every_vehicle.Count;
-
-            if(save){
-                metadataList = new List<string>(){};
-            }
-            
-            foreach (Vehicle v in vehicles)
-            {
-                
-                if(debugMode){
-                    //List<Vehicle> every_vehicle = new List<Vehicle>();
-                    //every_vehicle = (World.GetAllVehicles()).ToList(); 
-                    //int vehicleCount = every_vehicle.Count;
-                    //Debug.WriteLine($"Total number of vehicles: {vehicleCount}  out of {vehicles.Count}");
-                    DrawEntityBoundingBox(v, 250, 150, 0, 100);
+            if (!save){
+                vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), e.Handle, 17)).ToList(); 
+                if (vehicles.Count > 1){
+                    vehiclesOnScreen = true;
                 }
 
-                List<int> pointCoordsX = new List<int>(){}; // list of all the x coords of all the things
-                List<int> pointCoordsY = new List<int>(){};
-                
-                //List<int>[] visible = new List<int>[8];
-                //List<int>[] bbX3D = new List<int>[8];
-                //List<int>[] bbY3D = new List<int>[8];
+                var vehiclesNotInList = allVehicles.Except(vehicles).ToList();
+                 // Combine vehiclesNotInList and previousVehicles
+                var combinedList = vehiclesNotInList.Intersect(previousVehicles).ToList(); //Vehicles that used to be on screen that aren't anymore
 
-                List<float> keypointsX = new List<float>(){};
-                List<float> keypointsY = new List<float>(){};
-                List<int> visible = new List<int>(){};
-
-                
-                /*for (int i = 0; i < visible.Length; i++)
-                {
-                    visible[i] = new List<int>();
+                if (dashcamMode){
+                     //Debug.WriteLine($"allVehicles {allVehicles.Count} vehicles {vehicles.Count} from vehiclesNotInList {vehiclesNotInList.Count}  combinedList {combinedList.Count} previousVehicles {previousVehicles.Count}");
                 }
-                for (int i = 0; i < bbX3D.Length; i++)
+               
+                // Iterate through the combined list of vehicles
+                foreach (var vehicle in combinedList)
                 {
-                    bbX3D[i] = new List<int>();
+                    SetVehicleHasBeenOwnedByPlayer(vehicle.Handle, false);
+                    SetEntityAsMissionEntity(vehicle.Handle, true, true);
+                    //DeleteEntity(ref currentVeh);
+                    //DeleteVehicle(ref currentVeh);
+                    if(DoesEntityExist(vehicle.Driver.Handle)){
+                                                            vehicle.Driver.Delete();
+                                                        }
+                    vehicle.Delete();
+                    //Debug.WriteLine($"Vehicle deleted from updatmetadata");
                 }
-                for (int i = 0; i < visible.Length; i++)
-                {
-                    bbY3D[i] = new List<int>();
-                }*/
-
-                //float xVal =0f;
-                //float yVal=0f;
-
-                int xScreen=0;
-                int yScreen=0;
-
-                var vehicleBoxes = GetEntityBoundingBox(v.Handle);
                 
 
-                //GetScreenCoordFromWorldCoord(v.Position.X, v.Position.Y, v.Position.Z, ref xVal,ref yVal);
-                GetActiveScreenResolution(ref xScreen, ref yScreen);
+            }else{
 
+                
 
-                int counter = 0;
-                foreach(Vector3 vehicleBox in vehicleBoxes){
+                
 
-                    float xVal =0f;
-                    float yVal=0f;
+                //if(vehicles.Count>0){
+                //    vehiclesOnScreen = true;
+                //}else{
+            //     vehiclesOnScreen = false;
+                //}
 
-                    GetScreenCoordFromWorldCoord(vehicleBox.X, vehicleBox.Y, vehicleBox.Z, ref xVal,ref yVal);
-                    
-                    int currentXCoord = (int)(xVal*xScreen);
-                    int currentYCoord = (int)(yVal*yScreen);  
-                    
+                List<Vehicle> every_vehicle = new List<Vehicle>();
+                every_vehicle = (World.GetAllVehicles()).ToList(); 
+                int vehicleCount = every_vehicle.Count;
 
-                    Vector3 destination = vehicleBox;
-                    bool hit = false;
-                    var coords = Vector3.Zero;
-                    var normal = Vector3.Zero;
-                    int target = 0;
-                    int visibility;
-
-                    Vector3 cameraCoord = GetGameplayCamCoord();
-                    var idk = StartExpensiveSynchronousShapeTestLosProbe(cameraCoord.X, cameraCoord.Y, cameraCoord.Z, destination.X, destination.Y, destination.Z, -1, PlayerPedId(), 0);
-                    GetShapeTestResult(idk, ref hit, ref coords, ref normal, ref target);
-
-                    if(hit){
-                        visibility = 1;
-                    }else{
-                        visibility = 2;
-                    }
-
-                    visible.Add(visibility);
-                    keypointsX.Add(xVal);
-                    keypointsY.Add(yVal);
-
-
+                if(save){
+                    metadataList = new List<string>(){};
+                }
+                
+                foreach (Vehicle v in vehicles)
+                {
                     
                     if(debugMode){
+                        //List<Vehicle> every_vehicle = new List<Vehicle>();
+                        //every_vehicle = (World.GetAllVehicles()).ToList(); 
+                        //int vehicleCount = every_vehicle.Count;
+                        //Debug.WriteLine($"Total number of vehicles: {vehicleCount}  out of {vehicles.Count}");
+                        DrawEntityBoundingBox(v, 250, 150, 0, 100);
+                    }
+
+                    List<int> pointCoordsX = new List<int>(){}; // list of all the x coords of all the things
+                    List<int> pointCoordsY = new List<int>(){};
+                    
+                    //List<int>[] visible = new List<int>[8];
+                    //List<int>[] bbX3D = new List<int>[8];
+                    //List<int>[] bbY3D = new List<int>[8];
+
+                    List<float> keypointsX = new List<float>(){};
+                    List<float> keypointsY = new List<float>(){};
+                    List<int> visible = new List<int>(){};
+
+                    
+                    /*for (int i = 0; i < visible.Length; i++)
+                    {
+                        visible[i] = new List<int>();
+                    }
+                    for (int i = 0; i < bbX3D.Length; i++)
+                    {
+                        bbX3D[i] = new List<int>();
+                    }
+                    for (int i = 0; i < visible.Length; i++)
+                    {
+                        bbY3D[i] = new List<int>();
+                    }*/
+
+                    //float xVal =0f;
+                    //float yVal=0f;
+
+                    int xScreen=0;
+                    int yScreen=0;
+
+                    var vehicleBoxes = GetEntityBoundingBox(v.Handle);
+                    
+
+                    //GetScreenCoordFromWorldCoord(v.Position.X, v.Position.Y, v.Position.Z, ref xVal,ref yVal);
+                    GetActiveScreenResolution(ref xScreen, ref yScreen);
+
+
+                    int counter = 0;
+                    foreach(Vector3 vehicleBox in vehicleBoxes){
+
+                        float xVal =0f;
+                        float yVal=0f;
+
+                        GetScreenCoordFromWorldCoord(vehicleBox.X, vehicleBox.Y, vehicleBox.Z, ref xVal,ref yVal);
+                        
+                        int currentXCoord = (int)(xVal*xScreen);
+                        int currentYCoord = (int)(yVal*yScreen);  
                         
 
-                        SetDrawOrigin(vehicleBox.X, vehicleBox.Y, vehicleBox.Z, 0);
-                        //DrawTextOnScreen($"{currentXCoord},{currentYCoord} {hit} {counter}", 0f, 0f, 0.3f, Alignment.Center, 0); //shows text on screen
+                        Vector3 destination = vehicleBox;
+                        bool hit = false;
+                        var coords = Vector3.Zero;
+                        var normal = Vector3.Zero;
+                        int target = 0;
+                        int visibility;
+
+                        Vector3 cameraCoord = GetGameplayCamCoord();
+                        var idk = StartExpensiveSynchronousShapeTestLosProbe(cameraCoord.X, cameraCoord.Y, cameraCoord.Z, destination.X, destination.Y, destination.Z, -1, PlayerPedId(), 0);
+                        GetShapeTestResult(idk, ref hit, ref coords, ref normal, ref target);
+
+                        if(hit){
+                            visibility = 1;
+                        }else{
+                            visibility = 2;
+                        }
+
+                        visible.Add(visibility);
+                        keypointsX.Add(xVal);
+                        keypointsY.Add(yVal);
+
+
+                        
+                        if(debugMode){
+                            
+
+                            SetDrawOrigin(vehicleBox.X, vehicleBox.Y, vehicleBox.Z, 0);
+                            //DrawTextOnScreen($"{currentXCoord},{currentYCoord} {hit} {counter}", 0f, 0f, 0.3f, Alignment.Center, 0); //shows text on screen
+                            ClearDrawOrigin();
+                        }
+                        
+                        pointCoordsX.Add(currentXCoord);
+                        pointCoordsY.Add(currentYCoord);
+                        counter++;
+                    }
+
+                    
+                    int minX = pointCoordsX.Min();
+                    int minY = pointCoordsY.Min();
+
+                    int maxX = pointCoordsX.Max();
+                    int maxY = pointCoordsY.Max();
+
+                    
+                    /*if(debugMode){
+                        SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z+1.5f, 0);
+                        //DrawTextOnScreen($"{v.DisplayName}\n{v.ClassLocalizedName} Total number of vehicles: {vehicleCount}  out of {vehicles.Count}", 0f, 0f, 0.3f, Alignment.Center, 0); // 
+                        ClearDrawOrigin();
+                    }*/
+
+
+                    // Calculate the center point of the rectangle
+                    float centerX = (float)(minX + maxX) / 2.0f;
+                    float centerY = (float)(minY + maxY) / 2.0f;
+
+                    // Calculate the width and height of the rectangle
+                    float width = (float)(maxX - minX);
+                    float height = (float)(maxY - minY);
+
+                    // Convert the pixel coordinates to relative screen coordinates
+                    float relativeX = centerX / xScreen;
+                    float relativeY = centerY / yScreen;
+                    float relativeWidth = width / xScreen;
+                    float relativeHeight = height / yScreen;
+
+
+
+                    Vector3 destination2 = v.Position;
+                    bool hit2 = false;
+                    var coords2 = Vector3.Zero;
+                    var normal2 = Vector3.Zero;
+                    int target2 = 0;
+
+                    Vector3 cameraCoord2 = GetGameplayCamCoord();
+                    var idk2 = StartExpensiveSynchronousShapeTestLosProbe(cameraCoord2.X, cameraCoord2.Y, cameraCoord2.Z, destination2.X, destination2.Y, destination2.Z, -1, PlayerPedId(), 0);
+
+                    
+
+                    GetShapeTestResult(idk2, ref hit2, ref coords2, ref normal2, ref target2);
+                    
+                    if(hit2&&target2==v.Handle){
+                        hit2=false;
+                    }
+
+                    if(debugMode){
+                        SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z, 0);
+                        DrawTextOnScreen($"{hit2} by {target2} {v.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0); // 
                         ClearDrawOrigin();
                     }
-                    
-                    pointCoordsX.Add(currentXCoord);
-                    pointCoordsY.Add(currentYCoord);
-                    counter++;
-                }
 
-                
-                int minX = pointCoordsX.Min();
-                int minY = pointCoordsY.Min();
-
-                int maxX = pointCoordsX.Max();
-                int maxY = pointCoordsY.Max();
-
-                
-                /*if(debugMode){
-                    SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z+1.5f, 0);
-                    //DrawTextOnScreen($"{v.DisplayName}\n{v.ClassLocalizedName} Total number of vehicles: {vehicleCount}  out of {vehicles.Count}", 0f, 0f, 0.3f, Alignment.Center, 0); // 
-                    ClearDrawOrigin();
-                }*/
-
-
-                // Calculate the center point of the rectangle
-                float centerX = (float)(minX + maxX) / 2.0f;
-                float centerY = (float)(minY + maxY) / 2.0f;
-
-                // Calculate the width and height of the rectangle
-                float width = (float)(maxX - minX);
-                float height = (float)(maxY - minY);
-
-                // Convert the pixel coordinates to relative screen coordinates
-                float relativeX = centerX / xScreen;
-                float relativeY = centerY / yScreen;
-                float relativeWidth = width / xScreen;
-                float relativeHeight = height / yScreen;
-
-
-
-                Vector3 destination2 = v.Position;
-                bool hit2 = false;
-                var coords2 = Vector3.Zero;
-                var normal2 = Vector3.Zero;
-                int target2 = 0;
-
-                Vector3 cameraCoord2 = GetGameplayCamCoord();
-                var idk2 = StartExpensiveSynchronousShapeTestLosProbe(cameraCoord2.X, cameraCoord2.Y, cameraCoord2.Z, destination2.X, destination2.Y, destination2.Z, -1, PlayerPedId(), 0);
-
-                
-
-                GetShapeTestResult(idk2, ref hit2, ref coords2, ref normal2, ref target2);
-                
-                if(hit2&&target2==v.Handle){
-                    hit2=false;
-                }
-
-                if(debugMode){
-                    SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z, 0);
-                    DrawTextOnScreen($"{hit2} by {target2} {v.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0); // 
-                    ClearDrawOrigin();
-                }
-
-                if ((minX >= 0 && minY >= 0 && maxX < xScreen && maxY < yScreen) && v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)&&!hit2){ //If the full bounding box is on the screen
-                    vehiclesOnScreen = true;
-                    if (playerVehicle!=null){
-                        if (v.Handle!=playerVehicle.Handle){
-                            v.IsVisible = true;
+                    if ((minX >= 0 && minY >= 0 && maxX < xScreen && maxY < yScreen) && v.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), v.Handle, 17)&&!hit2){ //If the full bounding box is on the screen
+                        vehiclesOnScreen = true;
+                        if (playerVehicle!=null){
+                            if (v.Handle!=playerVehicle.Handle){
+                                v.IsVisible = true;
+                            }
+                        }else{
+                                v.IsVisible = true;
+                            }
+                        
+                        
+                        if(showBoxMode){
+                            DrawRect(relativeX, relativeY, relativeWidth, relativeHeight, 100, 255, 255, 150);
                         }
+                        
+                        if(save){
+                            // Set the camera's position and rotation to match the player's position and rotation
+                            //DrawRect(relativeX, relativeY, relativeWidth, relativeHeight, 255, 0, 0, 150);
+                            metadataList.Add($"{v.ClassDisplayName.Split('_').Last()} {relativeX} {relativeY} {relativeWidth} {relativeHeight} {keypointsX[0]} {keypointsY[0]} {visible[0]} {keypointsX[1]} {keypointsY[1]} {visible[1]} {keypointsX[2]} {keypointsY[2]} {visible[2]} {keypointsX[3]} {keypointsY[3]} {visible[3]} {keypointsX[4]} {keypointsY[4]} {visible[4]} {keypointsX[5]} {keypointsY[5]} {visible[5]} {keypointsX[6]} {keypointsY[6]} {visible[6]} {keypointsX[7]} {keypointsY[7]} {visible[7]}\n"); //TODO: Fix this issue with the number
+                        } //
                     }else{
-                            v.IsVisible = true;
-                        }
-                    
-                    
-                    if(showBoxMode){
-                        DrawRect(relativeX, relativeY, relativeWidth, relativeHeight, 100, 255, 255, 150);
-                    }
-                    
-                    if(save){
-                        // Set the camera's position and rotation to match the player's position and rotation
-                        //DrawRect(relativeX, relativeY, relativeWidth, relativeHeight, 255, 0, 0, 150);
-                        metadataList.Add($"{v.ClassDisplayName.Split('_').Last()} {relativeX} {relativeY} {relativeWidth} {relativeHeight} {keypointsX[0]} {keypointsY[0]} {visible[0]} {keypointsX[1]} {keypointsY[1]} {visible[1]} {keypointsX[2]} {keypointsY[2]} {visible[2]} {keypointsX[3]} {keypointsY[3]} {visible[3]} {keypointsX[4]} {keypointsY[4]} {visible[4]} {keypointsX[5]} {keypointsY[5]} {visible[5]} {keypointsX[6]} {keypointsY[6]} {visible[6]} {keypointsX[7]} {keypointsY[7]} {visible[7]}\n"); //TODO: Fix this issue with the number
-                    } //
-                }else{
-                    if(vehiclesFrozen && save){
-                         int currentVeh = v.Handle;
-                         if (playerVehicle!=null){
-                              if (currentVeh!=playerVehicle.Handle){
-                                //Debug.WriteLine($"Vehicle deleted: {currentVeh} {playerVehicle}");
+                        if(vehiclesFrozen && save){
+                            int currentVeh = v.Handle;
+                            if (playerVehicle!=null){
+                                if (currentVeh!=playerVehicle.Handle){
+                                    //Debug.WriteLine($"Vehicle deleted: {currentVeh} {playerVehicle}");
+                                    //DeleteEntity(ref currentVeh);
+                                    v.IsVisible = false;
+                                }  
+                            }else{
+                                //Debug.WriteLine($"Vehicle deleted: {currentVeh}");
                                 //DeleteEntity(ref currentVeh);
                                 v.IsVisible = false;
-                            }  
-                         }else{
-                             //Debug.WriteLine($"Vehicle deleted: {currentVeh}");
-                            //DeleteEntity(ref currentVeh);
-                            v.IsVisible = false;
-                         }
-                        
-                         
+                            }
+                            
+                            
+                            
+                        }
                         
                     }
-                    
                 }
             }
             if(save){
