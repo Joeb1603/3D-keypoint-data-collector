@@ -322,8 +322,8 @@ namespace DatasetGenerator.Client
             
             Debug.WriteLine($" DatasetGenerator.Client activated at [{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]");
 
-            bool testMode = true;
-            picsPerCondition =10;
+            bool testMode = false;
+            picsPerCondition =12;
             locations = new Location[]{
                 //new Location(new Vector3(-106.6908f, -519.0898f, 39.84289f), 0f, new Vector3(0f, 0f, -8.321015f), -30.22839f, 10f, picsFromLocation, true),
 
@@ -507,13 +507,18 @@ namespace DatasetGenerator.Client
                                 SetModelAsNoLongerNeeded(vehicleHash);
                                 
                                 previousVehicles.Add(vehicle);
-                                if (previousVehicles.Count >= 500)
+                                if (previousVehicles.Count >= 250)
                                 {
                                     // Remove the first item that went in
+                                     if(DoesEntityExist(vehicle.Handle)){
+                                        vehicle.Driver.Delete();
+                                        vehicle.Delete();
+                                        }
                                     previousVehicles.RemoveAt(0);
                                 }
                                 
-                                //SetEntityAsNoLongerNeeded(ref vehicle);
+                                int handle = vehicle.Handle;
+                                SetEntityAsNoLongerNeeded(ref handle);
                                 vehicle.PlaceOnGround();
 
                                 FreezeEntityPosition(vehicle.Handle, true);
@@ -662,7 +667,7 @@ namespace DatasetGenerator.Client
                                 
 
 
-                                var vehicleHash = (uint)GetHashKey("baller");
+                                var vehicleHash = (uint)GetHashKey("toros");
 
                                 RequestModel(vehicleHash);
                                 while (!HasModelLoaded(vehicleHash)){
@@ -1039,9 +1044,16 @@ namespace DatasetGenerator.Client
 
             if (!save){
                 vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), e.Handle, 17)).ToList(); 
-                if (vehicles.Count > 1){
+                if (dashcamMode){
+                     if (vehicles.Count > 1){
                     vehiclesOnScreen = true;
+                    }
+                }else{
+                     if (vehicles.Count > 0){
+                    vehiclesOnScreen = true;
+                    }
                 }
+               
 
                 var vehiclesNotInList = allVehicles.Except(vehicles).ToList();
                  // Combine vehiclesNotInList and previousVehicles
@@ -1245,6 +1257,9 @@ namespace DatasetGenerator.Client
                             }
                         }else{
                                 v.IsVisible = true;
+                                if(DoesEntityExist(v.Driver.Handle)){
+                                                            v.Driver.IsVisible = true;
+                                                        }
                             }
                         
                         
@@ -1265,11 +1280,17 @@ namespace DatasetGenerator.Client
                                     //Debug.WriteLine($"Vehicle deleted: {currentVeh} {playerVehicle}");
                                     //DeleteEntity(ref currentVeh);
                                     v.IsVisible = false;
+                                    if(DoesEntityExist(v.Driver.Handle)){
+                                                            v.Driver.IsVisible = false;
+                                                        }
                                 }  
                             }else{
                                 //Debug.WriteLine($"Vehicle deleted: {currentVeh}");
                                 //DeleteEntity(ref currentVeh);
                                 v.IsVisible = false;
+                                if(DoesEntityExist(v.Driver.Handle)){
+                                                            v.Driver.IsVisible = false;
+                                                        }
                             }
                             
                             
