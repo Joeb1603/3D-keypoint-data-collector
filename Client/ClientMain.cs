@@ -322,8 +322,8 @@ namespace DatasetGenerator.Client
             
             Debug.WriteLine($" DatasetGenerator.Client activated at [{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]");
 
-            bool testMode = false;
-            picsPerCondition =12;
+            bool testMode = true;
+            picsPerCondition =10;
             locations = new Location[]{
                 //new Location(new Vector3(-106.6908f, -519.0898f, 39.84289f), 0f, new Vector3(0f, 0f, -8.321015f), -30.22839f, 10f, picsFromLocation, true),
 
@@ -412,7 +412,7 @@ namespace DatasetGenerator.Client
                     
                     Vector3 currentVel = vecs[counter];//GetEntityVelocity(currentVeh);
 
-                    if((currentVel==new Vector3(0,0,0) || currentVel.Length()<targetSpeed/4) && !dashcamMode){ //Target speed /6   targetSpeed/4 7.5f currentVeh!=playerVehicle.Handle
+                    if((currentVel==new Vector3(0,0,0) || currentVel.Length()<targetSpeed/4) && !dashcamMode && false){ //Target speed /6   targetSpeed/4 7.5f currentVeh!=playerVehicle.Handle
                         if(DoesEntityExist(v.Driver.Handle)){
                                                             v.Driver.Delete();
                                                         }
@@ -507,18 +507,20 @@ namespace DatasetGenerator.Client
                                 SetModelAsNoLongerNeeded(vehicleHash);
                                 
                                 previousVehicles.Add(vehicle);
-                                if (previousVehicles.Count >= 250)
+                                if (previousVehicles.Count >= 150)
                                 {
                                     // Remove the first item that went in
-                                     if(DoesEntityExist(vehicle.Handle)){
-                                        vehicle.Driver.Delete();
-                                        vehicle.Delete();
+                                     if(DoesEntityExist(previousVehicles[0].Handle)){
+                                        previousVehicles[0].Driver.Delete();
+                                        previousVehicles[0].Delete();
+                                        Debug.WriteLine($"Deleting garbage");
                                         }
                                     previousVehicles.RemoveAt(0);
                                 }
                                 
                                 int handle = vehicle.Handle;
                                 SetEntityAsNoLongerNeeded(ref handle);
+                                SetVehicleAsNoLongerNeeded(ref handle);
                                 vehicle.PlaceOnGround();
 
                                 FreezeEntityPosition(vehicle.Handle, true);
@@ -549,6 +551,10 @@ namespace DatasetGenerator.Client
                                 SetDriverAggressiveness(driverPedGuy.Handle, 0f);
 
                                 TaskVehicleDriveWander(driverPedGuy.Handle, vehicle.Handle, GetVehicleModelMaxSpeed(model), 443);
+                                
+                                if (carVelocityDict.ContainsKey(vehicle.Handle)){
+                                    Debug.WriteLine($"{vehicle.Handle} already in da house");
+                                }
                                 
                                 carVelocityDict.Add(vehicle.Handle, currentVel);
                             }else{
@@ -960,7 +966,7 @@ namespace DatasetGenerator.Client
             }
 
 
-            if (collectMode && tickCounter>=ticksBetweenPics&&!takingData){ // ready to take an image 
+            if (collectMode && tickCounter>=ticksBetweenPics&&!takingData &&!vehiclesFrozen){ // ready to take an image  TODO: i added freezy vehs 
                 //Debug.WriteLine($"{tickCounter}");
                 if(!canStart){ // if not ready to start
                     if (tickCounter<500){ //1500 
@@ -1066,15 +1072,18 @@ namespace DatasetGenerator.Client
                 // Iterate through the combined list of vehicles
                 foreach (var vehicle in combinedList)
                 {
-                    SetVehicleHasBeenOwnedByPlayer(vehicle.Handle, false);
-                    SetEntityAsMissionEntity(vehicle.Handle, true, true);
-                    //DeleteEntity(ref currentVeh);
-                    //DeleteVehicle(ref currentVeh);
-                    if(DoesEntityExist(vehicle.Driver.Handle)){
-                                                            vehicle.Driver.Delete();
-                                                        }
-                    vehicle.Delete();
-                    //Debug.WriteLine($"Vehicle deleted from updatmetadata");
+                    if (false){
+
+                        SetVehicleHasBeenOwnedByPlayer(vehicle.Handle, false);
+                        SetEntityAsMissionEntity(vehicle.Handle, true, true);
+                        //DeleteEntity(ref currentVeh);
+                        //DeleteVehicle(ref currentVeh);
+                        if(DoesEntityExist(vehicle.Driver.Handle)){
+                                                                vehicle.Driver.Delete();
+                                                            }
+                        vehicle.Delete();
+                        //Debug.WriteLine($"Vehicle deleted from updatmetadata");
+                    }
                 }
                 
 
