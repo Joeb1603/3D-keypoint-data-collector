@@ -40,9 +40,9 @@ namespace DatasetGenerator.Client
         internal static float entityRange = 7500f;//10000f;//15000f;
         public float targetSpeed = 30f;
         private int picsPerCondition = 50;
-        private int ticksBetweenPicsBackup = 90;
-        private int ticksBetweenPics = 90;
-        private int ticksBetweenPicsDashcam = 120;
+        private int ticksBetweenPicsBackup = 15;
+        private int ticksBetweenPics = 15;
+        private int ticksBetweenPicsDashcam = 30;//30;
         Random random = new Random();
 
         
@@ -75,6 +75,13 @@ namespace DatasetGenerator.Client
 
         private bool generateTestDataset=true;
 
+        private bool timeToDashcam =false;
+
+        private bool readyToStartDashcam = false;
+
+        private bool countdownToRestart = false;
+                private int timeStopped = 0;
+
         List<Vehicle> previousVehicles = new List<Vehicle>();
 
          string[] vehicleNames = {
@@ -99,7 +106,7 @@ namespace DatasetGenerator.Client
         static string[] suvNames = {"seminole", "rocoto", "gresley", "baller", "baller2","baller8", "dorado","aleutian","vivanite","iwagen","baller7","astron","rebla", "novak", "toros", "xls",  "baller4", "huntley", "dubsta2","serrano", "seminole", "rocoto", "radi","patriot","mesa", "landstalker", "gresley", "fq2","dubsta","cavalcade", "bjxl"  };
         static string[] vanNames = {"burrito", "rumpo", "pony", "speedo", "youga","speedo4", "youga2"};
         static string[] sportsNames = {"rapidgt", "carbonizzare", "banshee", "massacro", "pariah", "panthere", "growler", "vectre", "rt3000", "zr350", "euros", "calico", "jester3", "elegy", "massacro","surano", "penumbra", "elegy2", "coquette", "feltzer2", "ninef"  };
-        static string[] sedanNames = {"impaler5", "previon", "primo2", "washington", "stanier","primo", "intruder"};//"asterope2" "schafter2",     "rhinehart", "stratum", "ingot",
+        static string[] sedanNames = {"impaler5", "primo2", "washington", "stanier","primo", "intruder"};//"asterope2" "schafter2",     "rhinehart", "stratum", "ingot", "previon"
         //static string[] sedanNames = {"asterope", "intruder", "primo", "stanier", "schafter2",};
         //static string[] muscleNames = {"dominator", "gauntlet", "vigero", "stalion", "dominator3",};
         static string[] muscleNames = {"dominator9","buffalo5", "vigero2", "buffalo4", "gauntlet4", "dominator", "tampa", "stalion","dukes", "vigero", "sabregt", "gauntlet", "buccaneer",  "gauntlet3" };
@@ -322,13 +329,13 @@ namespace DatasetGenerator.Client
             
             Debug.WriteLine($" DatasetGenerator.Client activated at [{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]");
 
-            bool testMode = true;
-            picsPerCondition =10;
+            bool testMode = false;
+            picsPerCondition = 120;
             locations = new Location[]{
                 //new Location(new Vector3(-106.6908f, -519.0898f, 39.84289f), 0f, new Vector3(0f, 0f, -8.321015f), -30.22839f, 10f, picsFromLocation, true),
 
                  // Highways
-                new Location(new Vector3(-1789.430f, -650.141f, 20f), 5.567f, new Vector3(0.000f, 0.000f, 5.567f),-17.59277f, 30f, picsPerCondition, testMode),
+                /*new Location(new Vector3(-1789.430f, -650.141f, 20f), 5.567f, new Vector3(0.000f, 0.000f, 5.567f),-17.59277f, 30f, picsPerCondition, testMode),
                 new Location(new Vector3(-2681.45f, 2616.035f, 19.39864f), -6.830189E-06f, new Vector3(0f, 0f, -47.18701f), -2.454675f, 30f, picsPerCondition, testMode),
                 new Location(new Vector3(-1162.208f, 5250.1f, 75.11191f), 6.830189E-06f, new Vector3(0f, 0f, 71.09592f), -31.23303f, 30f, picsPerCondition, testMode),
                 new Location(new Vector3(2609.129f, 5170.345f, 69.45427f), -1.366038E-05f, new Vector3(0f, 0f, -171.2556f), -35.15601f, 10f, picsPerCondition, testMode),
@@ -350,7 +357,7 @@ namespace DatasetGenerator.Client
                 new Location(new Vector3(199.72f, 211.8542f, 109.1424f), 6.830189E-06f, new Vector3(0f, 0f, 103.8686f), -4.056938f, 10f, picsPerCondition, testMode),
                 new Location(new Vector3(-917.3553f, 222.5634f, 70.46163f), -4.268868E-07f, new Vector3(0f, 0f, -5.603947f), -1.524998f, 10f, picsPerCondition, testMode),
                 new Location(new Vector3(-1812.643f, 741.5195f, 147.9204f), 6.830189E-06f, new Vector3(0f, 0f, 93.5533f), -13.79819f, 10f, picsPerCondition, testMode),
-                new Location(new Vector3(-1561.443f, 2141.757f, 63.60139f), -6.830189E-06f, new Vector3(0f, 0f, -95.46081f), -4.624403f, 10f, picsPerCondition, testMode),
+                new Location(new Vector3(-1561.443f, 2141.757f, 63.60139f), -6.830189E-06f, new Vector3(0f, 0f, -95.46081f), -4.624403f, 10f, picsPerCondition, testMode),*/
 
                 // New City locations
                 new Location(new Vector3(-396.6956f, 258.3295f, 84.95533f), -0.08379275f, new Vector3(0f, 0f, -169.8985f), -9.746197f, 10f, picsPerCondition, testMode),
@@ -513,7 +520,7 @@ namespace DatasetGenerator.Client
                                      if(DoesEntityExist(previousVehicles[0].Handle)){
                                         previousVehicles[0].Driver.Delete();
                                         previousVehicles[0].Delete();
-                                        Debug.WriteLine($"Deleting garbage");
+                                        //Debug.WriteLine($"Deleting garbage");
                                         }
                                     previousVehicles.RemoveAt(0);
                                 }
@@ -629,7 +636,10 @@ namespace DatasetGenerator.Client
         }
 
         public async void SetupDashcamMode(){
-            Debug.WriteLine($"helo");
+            //Debug.WriteLine($"helo");
+            
+            
+            //SetEntityCoords(playerEntity,-34.011f, 13.039f, 71.958f,  false, false, false, true);//
 
 
             int thingCounter = 0;
@@ -642,7 +652,7 @@ namespace DatasetGenerator.Client
                 if(!isValid){
                     thingCounter++;
                 }
-                 Debug.WriteLine($"{name}: {(isValid ? "Valid" : "Invalid")}");
+                 //Debug.WriteLine($"{name}: {(isValid ? "Valid" : "Invalid")}");
             }
             }
              Debug.WriteLine($"{thingCounter} invalid vehs");
@@ -668,7 +678,7 @@ namespace DatasetGenerator.Client
 
                             if (closestVehicle != null){
                                 
-                                Debug.WriteLine($"Closest vehicle: {closestVehicle.Handle}, Distance: {closestDistance} IDK");
+                                //Debug.WriteLine($"Closest vehicle: {closestVehicle.Handle}, Distance: {closestDistance} IDK");
 
                                 
 
@@ -740,9 +750,9 @@ namespace DatasetGenerator.Client
             
             if ((collectMode || dashcamMode) &&!vehiclesFrozen){ //added this to stop tick timer while cars are frozen
                 tickCounter++;
-            }else if (!vehiclesFrozen){
+            }/*else if (!vehiclesFrozen){
                 tickCounter=0;
-            }
+            }*/
             
             #region  If get info key is pressed f3
                 if (Game.IsControlJustPressed(0, (Control)getInfoKey)){
@@ -799,11 +809,16 @@ namespace DatasetGenerator.Client
 
             #region Change dashcam mode if key is pressed numpad 8
 
-            if (Game.IsControlJustPressed(0, (Control)dashcamCollectKey)){
+            if (Game.IsControlJustPressed(0, (Control)dashcamCollectKey) || timeToDashcam){
                     
+                    timeToDashcam = false;
                     if(!dashcamMode){ // If it is being changed to collect mode
 
-                        SetupDashcamMode();
+                        
+                        SetEntityCoords(playerEntity,-34.011f, 13.039f, 71.958f,  false, false, false, true);//
+                        tickCounter = 0;
+                        readyToStartDashcam = true;
+                        //SetupDashcamMode();
                         
                     
                     }else{
@@ -825,7 +840,53 @@ namespace DatasetGenerator.Client
                 }
                 #endregion
 
+             if (readyToStartDashcam){
+                if(!canStart){ // if not ready to start
+                //Debug.WriteLine($"dude: {tickCounter} ");
+                    if (tickCounter<250){ //1500 
+                        tickCounter+=1;
+                        //Debug.WriteLine($"wait: {tickCounter} ");
+                        /*if (tickCounter % 10 == 0) {
+                        UpdateMetadata(true);
+                        }*/
 
+                        //SetGameplayCamRelativePitch(0f, 1f);
+                        //SetGameplayCamRelativeHeading(0f);
+                    }else{ // next tick it will be ready 
+                        canStart=true;
+                        tickCounter = 0;
+                    }
+                }else{
+                    canStart=false;
+                    readyToStartDashcam = false;
+                    SetupDashcamMode();
+                }
+
+             }
+
+
+             if (countdownToRestart){
+                if(!canStart){ // if not ready to start
+                //Debug.WriteLine($"waiting to start again: {tickCounter} ");
+                    if (tickCounter<250){ //1500 
+                        tickCounter+=1;
+                        /*if (tickCounter % 10 == 0) {
+                        UpdateMetadata(true);
+                        }*/
+
+                        //SetGameplayCamRelativePitch(0f, 1f);
+                        //SetGameplayCamRelativeHeading(0f);
+                    }else{ // next tick it will be ready 
+                        canStart=true;
+                        tickCounter = 0;
+                    }
+                }else{
+                    canStart=false;
+                    countdownToRestart = false;
+                    timeToDashcam = true;
+                }
+
+             }
             //if (dashcamMode){
             //    SetGameplayCamRelativePitch(0f, 1f);
             //    SetGameplayCamRelativeHeading(0f);
@@ -838,7 +899,7 @@ namespace DatasetGenerator.Client
 
             if(dashcamMode&&vehiclesFrozen&&!takingData){
                 if(!canStart){ // if not ready to start
-                    if (tickCounter<30){ //1500 
+                    if (tickCounter<15){ //1500 
                             tickCounter+=1;
                             /*if (tickCounter % 10 == 0) {
                                 UpdateMetadata(true);
@@ -899,6 +960,7 @@ namespace DatasetGenerator.Client
             }
 
             if ((dashcamMode && tickCounter>=ticksBetweenPics) && !vehiclesFrozen &&!takingData){
+                //Debug.WriteLine($"PITCH:{ticksBetweenPics}"); //, picsPerCondition, testMode
                 SetCamViewModeForContext(0, 4);
                 SetCamViewModeForContext(1, 4);
                 SetCamViewModeForContext(2, 4);
@@ -924,10 +986,25 @@ namespace DatasetGenerator.Client
                     float speed = velocity.Length();
 
                     if (speed>1){
-                        ticksBetweenPics = ticksBetweenPicsBackup;
+                        ticksBetweenPics = ticksBetweenPicsDashcam;
+                        timeStopped = 0;
                     }else{
-                        ticksBetweenPics = 250;
+                        //ticksBetweenPics = ticksBetweenPicsDashcam;//ticksBetweenPics = 60;//250;
                         //Debug.WriteLine($"Stopped: {ticksBetweenPics} frames between screenshots");
+                        timeStopped++;
+                        Debug.WriteLine($"Stopped: {timeStopped}");
+                        if (timeStopped>99){//100,000
+                            timeToDashcam = true;
+                            timeStopped = 0;
+                            canStart = false;
+                            tickCounter=0;
+                            countdownToRestart = true;
+                            goto endOfTick;
+                        }
+                        
+                        
+
+
                     }
                     
 
@@ -1028,8 +1105,8 @@ namespace DatasetGenerator.Client
             
                 
             }
-
-        return Task.FromResult(0);
+        endOfTick: // always happens, or can be used to skip here
+            return Task.FromResult(0);
         
         }
         private void UpdateMetadata(bool save){
@@ -1048,7 +1125,7 @@ namespace DatasetGenerator.Client
             
             vehiclesOnScreen = false;
 
-            if (!save){
+            if (false){//!save){
                 vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(playerPos) < entityRange && HasEntityClearLosToEntity(PlayerPedId(), e.Handle, 17)).ToList(); 
                 if (dashcamMode){
                      if (vehicles.Count > 1){
