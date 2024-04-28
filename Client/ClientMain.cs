@@ -40,8 +40,8 @@ namespace DatasetGenerator.Client
         internal static float entityRange = 7500f;//10000f;//15000f;
         public float targetSpeed = 30f;
         private int picsPerCondition = 50;
-        private int ticksBetweenPicsBackup = 15;
-        private int ticksBetweenPics = 15;
+        private int ticksBetweenPicsBackup = 30;
+        private int ticksBetweenPics = 30;
         private int ticksBetweenPicsDashcam = 30;//30;
         Random random = new Random();
 
@@ -604,6 +604,16 @@ namespace DatasetGenerator.Client
                         v.PlaceOnGround();
                         float currentSpeed = currentVelocity.Length();
                         
+                        /*if(currentVelocity.Length()<1 && targetSpeed == 30){
+                            Debug.WriteLine($"fucks sake");
+                            SetEntityVelocity(currentVehicle,10+currentVelocity.X,10+currentVelocity.Y,currentVelocity.Z); //1.35f
+                        }else if(currentVelocity.Length()<targetSpeed){
+                            float modifier = 1+(targetSpeed-currentVelocity.Length())/(targetSpeed*2); //*2
+                            SetEntityVelocity(currentVehicle,currentVelocity.X*modifier,currentVelocity.Y*modifier,currentVelocity.Z); //1.35f
+                        }else{
+                            SetEntityVelocity(currentVehicle,currentVelocity.X,currentVelocity.Y,currentVelocity.Z);
+                        }*/
+
                         if(currentVelocity.Length()<targetSpeed){
                             float modifier = 1+(targetSpeed-currentVelocity.Length())/(targetSpeed*2); //*2
                             SetEntityVelocity(currentVehicle,currentVelocity.X*modifier,currentVelocity.Y*modifier,currentVelocity.Z); //1.35f
